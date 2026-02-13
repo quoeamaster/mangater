@@ -1,0 +1,9 @@
+[package]
+name = "mangater-sdk"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "SDK interface for Mangater"
+
+[dependencies]
+thiserror = "2.0.18"

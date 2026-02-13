@@ -1,0 +1,13 @@
+# root Cargo.toml acts as a workspace instead of a binary config file
+# the actual binary is under mangater-cli where the corresponding Cargo.toml would have features listed for the final build
+
+[workspace]
+members = [ 
+  "crates/mangater-core", 
+  "crates/mangater-sdk", 
+  "mangater-cli"
+#  "crates/mangater-sites/mangadex",
+#  "crates/mangater-sites/manganelo",
+#  "crates/mangater-sites/wikipedia",
+]
+resolver = "2"
