@@ -90,3 +90,19 @@ PS. the engine struct would hold a Registry instance; ultimately the CLI would n
 ||  registration done  ||  <- loop the process until all Registerable(s) are registered
 +=======================+
 ```
+## configuration concept
+
+Core engine will support 2 ways to load configuration
+- env variables loaded through .env file (can customize filename and path) OR
+- json config file (can customize filename and path)
+
+These 2 approaches should cover most of the configuration use cases; however if a custom approach is required. It is possible to provide an implementation of the sdk::traits::config trait. The implementation will be fully responsible for the following:
+- config data loading
+- transform the read config content into actual struct for access
+- providing access to the config through a key
+
+such examples could be:
+- config data stored in databases
+- config data stored in a midde tier technology such as [Redis](https://redis.io/) / [Elasticsearch](https://www.elastic.co/)
+- config data stored in [yaml](https://en.wikipedia.org/wiki/YAML) / [toml](https://toml.io/en/) (official support config file is json ONLY at this moment)
+

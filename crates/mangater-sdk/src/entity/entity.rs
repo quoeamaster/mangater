@@ -91,10 +91,11 @@ pub struct PatternMatchResult {
 /// ```
 pub struct Registerable {
     /// Used to configure the domain/entity.
-    pub configurator: Box<dyn Config>,
+    /// Only if having custom implementations rather than env var OR config file(s).
+    pub configurator: Option<Box<dyn Config>>,
     /// Used for content matching (i.e., parsing and identifying content on webpages).
-    pub matcher: Box<dyn Matcher>,
+    pub matcher: Option<Box<dyn Matcher>>,
     /// Used for persisting or caching results.
-    pub storage: Box<dyn Storage>,
+    pub storage: Option<Box<dyn Storage>>,
 }
 // Box<dyn Domain>
