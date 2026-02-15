@@ -29,8 +29,10 @@ mod matcher;
 mod storage;
 mod config;
 mod domain;
+mod registry;
 
 pub use matcher::Matcher;
 pub use storage::Storage;
 pub use config::Config;
 pub use domain::Domain;
+pub use registry::Registry;

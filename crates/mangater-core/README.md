@@ -60,3 +60,33 @@ mangater-core::Registry
 - the hub of supported website implementations
 - work closely with the sdk crate's Domain struct
 ```
+
+<blockquote>
+PS. the engine struct would hold a Registry instance; ultimately the CLI would need to pass this Registry reference to the sdk::Domain implementation to get themselves registered
+</blockquote>
+
+```
++========================+
+|| registration starts  ||
++========+===============+
+         |
+         v
++-----------------------+
+|   engine.registry()   |  <- get access to the sdk::traits::Registry implementation
++--------+--------------+
+         |
+         v
++-------------------------------+
+|   registr.add_to_registry()   |  <- pass an implementation of sdk::traits::Domain to the registry instance for registration
++--------+----------------------+
+         |
+         v
++------------------------------+
+|   domain.register_domain()   |  <- the Domain implementation would call its register_domain against the Registry instance
++--------+---------------------+
+         |
+         v
++=======================+
+||  registration done  ||  <- loop the process until all Registerable(s) are registered
++=======================+
+```

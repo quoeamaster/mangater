@@ -64,9 +64,38 @@ pub struct PatternMatchResult {
 }
 
 
+/// Aggregates components required for registration within the Mangater SDK. 
+/// 
+/// The `Registerable` struct acts as a container for the entities involved in the
+/// configuration, matching, and storage functionalities. It is typically intended
+/// for dynamic type usage, as each field is boxed and implements the respective
+/// trait.
+///
+/// This is the heart of the SDK, as it combines everything required for a domain to work out.
+/// - the configurator defines how config file(s) should be loaded
+/// - the matcher defines how the content should be matched (resource level, navigation level etc)
+/// - the storage defines how the content should be persisted (file, blob storage etc)
+///
+/// # Fields
+///
+/// - `configurator`: A boxed dynamic trait object implementing [`Config`] for configuration functionality.
+/// - `matcher`: A boxed dynamic trait object implementing [`Matcher`] for pattern matching.
+/// - `storage`: A boxed dynamic trait object implementing [`Storage`] for data persistence.
+///
+/// # Example
+/// ```ignore
+/// let reg = Registerable {
+///     configurator: Box::new(MyConfigurator {}),
+///     matcher: Box::new(MyMatcher {}),
+///     storage: Box::new(MyStorage {}),
+/// };
+/// ```
 pub struct Registerable {
+    /// Used to configure the domain/entity.
     pub configurator: Box<dyn Config>,
+    /// Used for content matching (i.e., parsing and identifying content on webpages).
     pub matcher: Box<dyn Matcher>,
+    /// Used for persisting or caching results.
     pub storage: Box<dyn Storage>,
 }
 // Box<dyn Domain>

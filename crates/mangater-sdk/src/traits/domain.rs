@@ -27,6 +27,7 @@
 
 use crate::errors::SdkError;
 use crate::entity::Registerable;
+use crate::traits::Registry;
 
 /// The `Domain` trait provides an interface for matching a given domain string
 /// to determine if it is supported or recognized by an implementation.
@@ -44,16 +45,20 @@ pub trait Domain {
     /// - `Err(SdkError)` if an error occurs during the matching process.
     fn match_domain(&self, domain: String) -> Result<bool, SdkError>;
 
-    /// Registers a domain along with its associated trait implementations.
+    /// Registers a domain along with its associated trait implementations in the given registry.
     ///
     /// # Parameters
-    /// - `domain`: A string identifying the domain to register (e.g., "www.example.com").
-    /// - `implementations`: Reference to a [`Registerable`] grouping containing the 
-    ///   [`Config`], [`Matcher`], and [`Storage`] trait implementations for the domain.
+    /// - `registry`: A boxed trait object reference to a [`Registry`] where the domain mapping will be added.
+    /// - `domain`: The domain string (e.g., `"www.example.com"`) to be registered.
+    /// - `implementations`: A reference to a [`Registerable`] that groups the implementations for [`Config`], [`Matcher`], and [`Storage`] traits for this domain.
+    ///
+    /// # Usage
+    /// Typically used during initialization to bind a supported website's functionality group to a domain key.
     ///
     /// # Example
     /// ```
-    /// // domain.register_domain("www.example.com".to_string(), &registerable_impl);
+    /// // Suppose `my_registry` implements Registry, and `registerable_impl` is a Registerable.
+    /// domain.register_domain(Box::new(my_registry), "www.example.com".to_string(), &registerable_impl);
     /// ```
-    fn register_domain(&self, domain: String, implementations: &Registerable);
+    fn register_domain(&self, registry: Box<dyn Registry>, domain: String, implementations: &Registerable);
 }
