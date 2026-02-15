@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -24,8 +24,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-
 
 use thiserror::Error;
 
@@ -96,7 +94,10 @@ mod tests {
             SdkError::Storage(_) => {
                 assert!(sdk_err.to_string().contains("disk"));
             }
-            _ => panic!("Expected Storage variant, but failed or not the expected error type: {}", sdk_err),
+            _ => panic!(
+                "Expected Storage variant, but failed or not the expected error type: {}",
+                sdk_err
+            ),
         }
     }
 }

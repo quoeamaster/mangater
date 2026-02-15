@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -27,4 +27,4 @@
 
 mod entity;
 
-pub use entity::{ PatternAndType, PatternType, PatternMatchResult, Registerable };
+pub use entity::{PatternAndType, PatternMatchResult, PatternType, Registerable};

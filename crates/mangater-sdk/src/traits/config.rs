@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -26,7 +26,7 @@
 // SOFTWARE.
 
 use crate::errors::SdkError;
-/// The `Config` trait defines an interface for loading configuration required by 
+/// The `Config` trait defines an interface for loading configuration required by
 /// an implementation of the Mangater SDK service. Implementation may choose the
 /// actual configuration source and format (e.g. file, environment variable, remote endpoint).
 pub trait Config {
@@ -34,4 +34,3 @@ pub trait Config {
     /// or a `SdkError` on failure.
     fn load(&self) -> Result<Option<String>, SdkError>;
 }
-

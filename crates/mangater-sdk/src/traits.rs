@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -25,14 +25,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-mod matcher;
-mod storage;
 mod config;
 mod domain;
+mod matcher;
 mod registry;
+mod storage;
 
-pub use matcher::Matcher;
-pub use storage::Storage;
 pub use config::Config;
 pub use domain::Domain;
+pub use matcher::Matcher;
 pub use registry::Registry;
+pub use storage::Storage;

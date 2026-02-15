@@ -5,19 +5,19 @@ pub const DEFAULT_ENV_FILE: &str = ".env";
 pub const DEFAULT_JSON_FILE: &str = "config.json";
 
 /// Loads environment variables from the specified `.env` file using the `dotenvy` crate.
-/// 
+///
 /// # Arguments
-/// 
-/// * `env_file` - An `Option<String>` specifying the path to the environment file. 
+///
+/// * `env_file` - An `Option<String>` specifying the path to the environment file.
 ///                If `None`, defaults to `DEFAULT_ENV_FILE`.
-/// 
+///
 /// # Returns
-/// 
+///
 /// * `Ok(None)` if the environment variables are loaded successfully.
 /// * `Err(SdkError)` if the `.env` file cannot be found or loaded.
-/// 
+///
 /// # Errors
-/// 
+///
 /// Returns `SdkError::NotFound` if the environment file does not exist or cannot be read.
 pub fn load_from_env(env_file: Option<String>) -> Result<Option<String>, SdkError> {
     // in case env_file was None; default to .env
@@ -38,18 +38,18 @@ pub fn load_from_env(env_file: Option<String>) -> Result<Option<String>, SdkErro
 }
 
 /// Loads a JSON configuration file and returns its contents as a `String` wrapped in a `Some` variant on success.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `json_file` - An `Option<String>` specifying the path to the JSON configuration file. If `None`, defaults to `DEFAULT_JSON_FILE`.
-/// 
+///
 /// # Returns
-/// 
+///
 /// * `Ok(Some(String))` containing the file's contents on success.
 /// * `Err(SdkError)` if the file cannot be found or read.
-/// 
+///
 /// # Errors
-/// 
+///
 /// Returns `SdkError::NotFound` if the JSON configuration file does not exist or cannot be read.
 pub fn load_from_json(json_file: Option<String>) -> Result<Option<String>, SdkError> {
     let json_file = json_file.unwrap_or(DEFAULT_JSON_FILE.to_string());

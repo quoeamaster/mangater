@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -25,8 +25,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use crate::errors::SdkError;
 use crate::entity::Registerable;
+use crate::errors::SdkError;
 use crate::traits::Registry;
 
 /// The `Domain` trait provides an interface for matching a given domain string
@@ -56,9 +56,14 @@ pub trait Domain {
     /// Typically used during initialization to bind a supported website's functionality group to a domain key.
     ///
     /// # Example
-    /// ```
+    /// ```ignore
     /// // Suppose `my_registry` implements Registry, and `registerable_impl` is a Registerable.
     /// domain.register_domain(Box::new(my_registry), "www.example.com".to_string(), &registerable_impl);
     /// ```
-    fn register_domain(&self, registry: Box<dyn Registry>, domain: String, implementations: &Registerable);
+    fn register_domain(
+        &self,
+        registry: Box<dyn Registry>,
+        domain: String,
+        implementations: &Registerable,
+    );
 }

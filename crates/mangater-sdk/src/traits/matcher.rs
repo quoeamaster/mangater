@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -25,7 +25,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use crate::entity::{ PatternAndType, PatternMatchResult };
+use crate::entity::{PatternAndType, PatternMatchResult};
 
 /// The `Matcher` trait defines the interface for matching resource patterns from a given source,
 /// such as a web page. Implementors should provide logic that takes a list of patterns (with associated types),

@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -63,9 +63,8 @@ pub struct PatternMatchResult {
     pub resource_string: String,
 }
 
-
-/// Aggregates components required for registration within the Mangater SDK. 
-/// 
+/// Aggregates components required for registration within the Mangater SDK.
+///
 /// The `Registerable` struct acts as a container for the entities involved in the
 /// configuration, matching, and storage functionalities. It is typically intended
 /// for dynamic type usage, as each field is boxed and implements the respective

@@ -3,7 +3,7 @@
 //
 // This file is dual-licensed under the terms of the MIT.
 //
-// You may choose either license at your option. 
+// You may choose either license at your option.
 // For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
 //
 // MIT License:
@@ -29,7 +29,7 @@ use crate::entity::PatternMatchResult;
 use crate::errors::SdkError;
 
 /// The `Storage` trait defines the interface for persisting resources extracted by the Mangater SDK.
-/// 
+///
 /// Implementors are responsible for defining how and where the resource and its associated content bytes
 /// are stored (e.g., filesystem, database, remote blob storage, etc.).
 pub trait Storage {
@@ -43,5 +43,9 @@ pub trait Storage {
     /// # Returns
     ///
     /// * `Result<(), SdkError>` - Returns `Ok(())` if the resource was successfully persisted, or an `SdkError` if an error occurred.
-    fn persist(&self, resource: &PatternMatchResult, resource_content: Vec<u8>) -> Result<(), SdkError>;
+    fn persist(
+        &self,
+        resource: &PatternMatchResult,
+        resource_content: Vec<u8>,
+    ) -> Result<(), SdkError>;
 }
