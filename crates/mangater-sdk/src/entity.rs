@@ -25,6 +25,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-mod entity;
+mod model;
 
-pub use entity::{PatternAndType, PatternMatchResult, PatternType, Registerable};
+pub use model::{PatternAndType, PatternMatchResult, PatternType, Registerable};

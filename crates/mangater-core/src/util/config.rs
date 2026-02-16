@@ -35,8 +35,7 @@ pub const DEFAULT_JSON_FILE: &str = "config.json";
 ///
 /// # Arguments
 ///
-/// * `env_file` - An `Option<String>` specifying the path to the environment file.
-///                If `None`, defaults to `DEFAULT_ENV_FILE`.
+/// * `env_file` - An `Option<String>` specifying the path to the environment file. If `None`, defaults to `DEFAULT_ENV_FILE`.
 ///
 /// # Returns
 ///
@@ -54,8 +53,7 @@ pub fn load_from_env(env_file: Option<String>) -> Result<Option<String>, SdkErro
     dotenvy::from_filename(&env_file).map_err(|e| {
         SdkError::NotFound(
             format!(
-                "Failed to load environment variables, make sure the env file {env_file} exists - {}",
-                e.to_string()
+                "Failed to load environment variables, make sure the env file {env_file} exists - {e}"
             )
             .to_string(),
         )
@@ -85,8 +83,7 @@ pub fn load_from_json(json_file: Option<String>) -> Result<Option<String>, SdkEr
     let config_in_json = fs::read_to_string(&json_file).map_err(|e| {
         SdkError::NotFound(
             format!(
-                "Failed to load JSON configuration, make sure the file {json_file} exists - {}",
-                e.to_string()
+                "Failed to load JSON configuration, make sure the file {json_file} exists - {e}"
             )
             .to_string(),
         )
