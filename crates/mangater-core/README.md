@@ -76,9 +76,9 @@ PS. the engine struct would hold a Registry instance; ultimately the CLI would n
 +--------+--------------+
          |
          v
-+-------------------------------+
-|   registr.add_to_registry()   |  <- pass an implementation of sdk::traits::Domain to the registry instance for registration
-+--------+----------------------+
++--------------------------------+
+|   registry.add_to_registry()   |  <- pass an implementation of sdk::traits::Domain to the registry instance for registration
++--------+-----------------------+
          |
          v
 +------------------------------+

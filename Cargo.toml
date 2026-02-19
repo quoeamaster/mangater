@@ -4,7 +4,7 @@
 [workspace]
 members = [ 
   "crates/mangater-core", 
-  "crates/mangater-sdk", 
+  "crates/mangater-sdk", "crates/sites/wikipedia", 
   "mangater-cli"
 #  "crates/mangater-sites/mangadex",
 #  "crates/mangater-sites/manganelo",

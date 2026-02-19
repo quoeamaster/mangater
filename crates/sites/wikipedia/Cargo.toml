@@ -1,0 +1,12 @@
+[package]
+name = "wikipedia"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "wikipedia implementation for Mangater"
+
+[dependencies]
+mangater-sdk = { path = "../../mangater-sdk" }
+
+regex = "1.12.3"
+tracing = "0.1.44"

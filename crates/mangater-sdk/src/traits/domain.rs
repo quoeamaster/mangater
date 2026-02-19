@@ -62,8 +62,12 @@ pub trait Domain {
     /// ```
     fn register_domain(
         &self,
-        registry: Box<dyn Registry>,
+        //registry: Box<dyn Registry>,
         domain: String,
         implementations: &Registerable,
     );
+
+    fn get_domain_key(&self) -> String;
+
+    fn get_domain_registerable(&self) -> &Registerable;
 }
