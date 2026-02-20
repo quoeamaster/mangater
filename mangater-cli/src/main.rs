@@ -6,7 +6,7 @@ use crate::cli::Cli;
 use mangater_cli::cmd;
 use mangater_cli::entity::LogLevel;
 
-use tracing::{debug, error, info, warn};
+use tracing::debug;
 use tracing_subscriber::EnvFilter;
 
 fn init_tracing(log_level: &LogLevel) {
