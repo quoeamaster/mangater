@@ -101,21 +101,19 @@ mod tests {
         // .env file does not exist; hence will have error for sure
         let result = load_from_env(None);
         assert!(result.is_err());
-        assert!(
-            result
-                .err()
-                .unwrap()
-                .to_string()
-                .contains("Failed to load environment variables, make sure the env file")
-        );
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("Failed to load environment variables, make sure the env file"));
         // again but checking error type instead
         let result = load_from_env(None);
         match result {
             Ok(_) => panic!("Expected error (default .env file does not exist), got Ok"),
             // make sure the error type is SdkError::NotFound
-            Err(SdkError::NotFound(msg)) => assert!(
-                msg.contains("Failed to load environment variables, make sure the env file")
-            ),
+            Err(SdkError::NotFound(msg)) => {
+                assert!(msg.contains("Failed to load environment variables, make sure the env file"))
+            }
             Err(e) => panic!("Expected SdkError::NotFound, got {:?}", e),
         }
         // again with a valid custom .env file
@@ -144,13 +142,11 @@ mod tests {
         // json file does not exist; hence will have error for sure (config.json does not exist)
         let result = load_from_json(None);
         assert!(result.is_err());
-        assert!(
-            result
-                .err()
-                .unwrap()
-                .to_string()
-                .contains("Failed to load JSON configuration, make sure the file")
-        );
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("Failed to load JSON configuration, make sure the file"));
         // again but checking error type instead
         let result = load_from_json(None);
         match result {

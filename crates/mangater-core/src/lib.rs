@@ -25,5 +25,5 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-pub mod util;
 pub mod orchestration;
+pub mod util;

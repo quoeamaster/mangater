@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
-use mangater_cli::entity::{ScrapArgs, ConfigMode, LogLevel};
-
+use mangater_cli::entity::{ConfigMode, LogLevel, ScrapArgs};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -12,9 +11,8 @@ use mangater_cli::entity::{ScrapArgs, ConfigMode, LogLevel};
 pub struct Cli {
     //#[command(flatten)]
     //pub global_args: GlobalArgs,
-
     /// Config file path
-    #[arg(global = true,short, long)]
+    #[arg(global = true, short, long)]
     pub config: Option<String>,
 
     /// Config source
@@ -30,6 +28,11 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    #[command(about = "Scrap based on the provided URL; if a supported `matcher` is found, the scrap will be performed")]
+    #[command(
+        about = "Scrap based on the provided URL; if a supported `matcher` is found, the scrap will be performed"
+    )]
     Scrap(ScrapArgs),
+
+    #[command(about = "List all supported domains")]
+    ListDomains,
 }

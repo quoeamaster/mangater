@@ -6,11 +6,16 @@ license = "MIT"
 description = "CLI for Mangater - act as an example of how the Mangater eco-system works"
 
 [features]
-default = []
+default = ["official-sites"]
+official-sites = ["wikipedia"]
+# official-sites = []
+wikipedia = ["site-wikipedia"]
 
 [dependencies]
 mangater-core = { path = "../crates/mangater-core" }
 mangater-sdk = { path = "../crates/mangater-sdk" }
+site-wikipedia = { path = "../crates/sites/wikipedia", optional = true}
+
 
 clap = { version = "^4.5.59", features = ["derive", "env"] }
 dotenvy = "0.15.7"

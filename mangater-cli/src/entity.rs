@@ -1,3 +1,3 @@
 mod model;
 
-pub use model::{ScrapArgs, ConfigMode, LogLevel};
+pub use model::{ConfigMode, LogLevel, ScrapArgs};

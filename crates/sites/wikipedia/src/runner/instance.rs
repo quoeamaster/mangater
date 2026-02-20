@@ -1,45 +1,55 @@
-use mangater_sdk::traits::{ Domain, Config, Matcher, Storage };
-use mangater_sdk::entity::{ Registerable, PatternAndType, PatternMatchResult };
+use mangater_sdk::entity::{PatternAndType, PatternMatchResult, Registerable};
+use mangater_sdk::traits::{Domain, Matcher};
 use mangater_sdk::SdkError;
 
+use regex::Regex;
 use tracing::warn;
 
-pub struct WikipediaInstance {}
+use once_cell::sync::Lazy;
+use std::sync::Arc;
 
-impl Config for WikipediaInstance {
-    fn load(&self) -> Result<Option<String>, SdkError> {
-        warn!("TBD: WikipediaInstance::load");
-        Ok(None)
-    }
-    fn config_by_key(&self, key: &str) -> Result<Option<String>, SdkError> {
-        warn!("TBD: WikipediaInstance::config_by_key");
-        Ok(None)
+/// for wikipedia domain matching, a static regex is used to avoid recompilation on each match.
+static WIKI_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"^https://([a-zA-Z0-9-]+\.)*wikipedia\.org(/.*)?$").unwrap());
+
+#[derive(Clone, Debug)]
+pub struct WikipediaInstance {
+    pub domain_key: String,
+}
+
+impl WikipediaInstance {
+    pub fn new() -> Self {
+        Self {
+            domain_key: "wikipedia".to_string(),
+        }
     }
 }
 
 impl Domain for WikipediaInstance {
     fn match_domain(&self, domain: String) -> Result<bool, SdkError> {
-        warn!("TBD: WikipediaInstance::match_domain");
-        Ok(domain.contains("wikipedia.org"))
-    }
-    fn register_domain(
-        &self,
-        //registry: Box<dyn Registry>,
-        domain: String,
-        implementations: &Registerable,
-    ) {
-        warn!("TBD: WikipediaInstance::register_domain");
-    }
-    fn get_domain_key(&self) -> String {
-        warn!("TBD: WikipediaInstance::get_domain_key");
-        "wikipedia".to_string()
+        // easiest way... but not 100% accurate
+        //Ok(domain.contains("wikipedia.org"))
+
+        Ok(WIKI_REGEX.is_match(&domain))
     }
 
-    fn get_domain_registerable(&self) -> &Registerable {
-        warn!("TBD: WikipediaInstance::get_domain_registerable");
-        &Registerable {
+    // fn register_domain(
+    //     &self,
+    //     //registry: Box<dyn Registry>,
+    //     domain: String,
+    //     implementations: &Registerable,
+    // ) {
+    //     warn!("TBD: WikipediaInstance::register_domain");
+    // }
+
+    fn get_domain_key(&self) -> String {
+        self.domain_key.clone()
+    }
+
+    fn get_domain_registerable(&self) -> Registerable {
+        Registerable {
             configurator: None,
-            matcher: None,
+            matcher: Arc::new(self.clone()), // matcher: Arc::new(WikipediaInstance), (if stateless, no need to clone)
             storage: None,
         }
     }
@@ -52,13 +62,26 @@ impl Matcher for WikipediaInstance {
     }
 }
 
-impl Storage for WikipediaInstance {
-    fn persist(
-        &self,
-        resource: &PatternMatchResult,
-        resource_content: Vec<u8>,
-    ) -> Result<(), SdkError> {
-        warn!("TBD: WikipediaInstance::persist");
-        Ok(())
-    }
-}
+// for most cases, Config and Storage traits are not required as the default implementations are sufficient (provided by core::Engine)
+
+// impl Config for WikipediaInstance {
+//     fn load(&self) -> Result<Option<String>, SdkError> {
+//         warn!("TBD: WikipediaInstance::load");
+//         Ok(None)
+//     }
+//     fn config_by_key(&self, key: &str) -> Result<Option<String>, SdkError> {
+//         warn!("TBD: WikipediaInstance::config_by_key");
+//         Ok(None)
+//     }
+// }
+
+// impl Storage for WikipediaInstance {
+//     fn persist(
+//         &self,
+//         resource: &PatternMatchResult,
+//         resource_content: Vec<u8>,
+//     ) -> Result<(), SdkError> {
+//         warn!("TBD: WikipediaInstance::persist");
+//         Ok(())
+//     }
+// }

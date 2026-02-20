@@ -22,7 +22,6 @@ pub struct ScrapArgs {
     pub output: Option<String>,
 }
 
-
 #[derive(Clone, ValueEnum, Debug)]
 pub enum ConfigMode {
     Json,

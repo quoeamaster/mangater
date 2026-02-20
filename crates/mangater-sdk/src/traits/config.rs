@@ -33,7 +33,7 @@ use crate::errors::SdkError;
 /// Note that this implementation is ONLY required if you have your own configuration logics behind the scenes.
 /// Take an example, instead of from env variables OR config file(s),
 /// you are expecting to get config data stored in database / Redis - hence need your custom implementation.
-pub trait Config {
+pub trait Config: Send + Sync {
     /// Loads the configuration and returns it as a `String` wrapped in an `Option` on success,
     /// or a `SdkError` on failure.
     fn load(&self) -> Result<Option<String>, SdkError>;

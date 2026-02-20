@@ -12,7 +12,7 @@ impl Engine {
     }
 
     /// return a read-only reference to the underlying registry implementation
-    pub fn registry(&self) -> &dyn mangater_sdk::traits::Registry {
-        &self.registry
+    pub fn registry(&mut self) -> &mut dyn mangater_sdk::traits::Registry {
+        &mut self.registry
     }
 }

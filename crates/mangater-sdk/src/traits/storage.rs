@@ -32,7 +32,7 @@ use crate::errors::SdkError;
 ///
 /// Implementors are responsible for defining how and where the resource and its associated content bytes
 /// are stored (e.g., filesystem, database, remote blob storage, etc.).
-pub trait Storage {
+pub trait Storage: Send + Sync {
     /// Persists the given resource and its content.
     ///
     /// # Arguments

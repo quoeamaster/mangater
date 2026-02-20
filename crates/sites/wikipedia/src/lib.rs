@@ -1,2 +1,3 @@
-pub mod runner;
+mod runner;
 
+pub use runner::instance::WikipediaInstance;

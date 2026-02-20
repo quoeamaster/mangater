@@ -32,6 +32,7 @@
 //!
 
 use crate::traits::{Config, Matcher, Storage};
+use std::sync::Arc;
 
 /// Represents a pattern and its associated type found on a web page.
 ///
@@ -92,10 +93,10 @@ pub struct PatternMatchResult {
 pub struct Registerable {
     /// Used to configure the domain/entity.
     /// Only if having custom implementations rather than env var OR config file(s).
-    pub configurator: Option<Box<dyn Config>>,
+    pub configurator: Option<Arc<dyn Config + Send + Sync>>,
     /// Used for content matching (i.e., parsing and identifying content on webpages).
-    pub matcher: Option<Box<dyn Matcher>>,
+    pub matcher: Arc<dyn Matcher + Send + Sync>,
     /// Used for persisting or caching results.
-    pub storage: Option<Box<dyn Storage>>,
+    pub storage: Option<Arc<dyn Storage + Send + Sync>>,
 }
 // Box<dyn Domain>
