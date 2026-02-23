@@ -6,4 +6,5 @@ license = "MIT"
 description = "SDK interface for Mangater"
 
 [dependencies]
+async-trait = "0.1.89"
 thiserror = "2.0.18"

@@ -25,11 +25,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+use async_trait::async_trait;
+
 use crate::entity::{PatternAndType, PatternMatchResult};
 
 /// The `Matcher` trait defines the interface for matching resource patterns from a given source,
 /// such as a web page. Implementors should provide logic that takes a list of patterns (with associated types),
 /// searches for matches according to their own matching logic, and returns the results as a collection of `PatternMatchResult`.
+#[async_trait]
 pub trait Matcher: Send + Sync {
     /// Attempts to match each given pattern against the current resource (e.g., a page).
     ///
@@ -40,5 +43,5 @@ pub trait Matcher: Send + Sync {
     /// # Returns
     ///
     /// * `Vec<PatternMatchResult>` - The results of applying all patterns, possibly empty if no patterns matched.
-    fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult>;
+    async fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult>;
 }

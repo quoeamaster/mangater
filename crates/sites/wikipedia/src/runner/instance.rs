@@ -3,6 +3,7 @@ use mangater_sdk::traits::{Domain, Matcher};
 use mangater_sdk::SdkError;
 
 use regex::Regex;
+use async_trait::async_trait;
 use tracing::warn;
 
 use once_cell::sync::Lazy;
@@ -55,8 +56,9 @@ impl Domain for WikipediaInstance {
     }
 }
 
+#[async_trait]
 impl Matcher for WikipediaInstance {
-    fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult> {
+    async fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult> {
         warn!("TBD: WikipediaInstance::match_patterns");
         Vec::new()
     }
