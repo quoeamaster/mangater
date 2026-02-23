@@ -56,6 +56,7 @@ impl Domain for WikipediaInstance {
 
     fn get_domain_registerable(&self) -> Registerable {
         Registerable {
+            //configurator: Some(Arc::new(self.clone())),
             configurator: None,
             matcher: Arc::new(self.clone()), // matcher: Arc::new(WikipediaInstance), (if stateless, no need to clone)
             storage: None,
@@ -91,13 +92,17 @@ impl Matcher for WikipediaInstance {
     }
 }
 
+// in case the plugin impl has no additional config to look for; you dont need to impl the Config trait at all.
+// hence no additional serde dependencies as well...
+
 impl Config for WikipediaInstance {
     fn load(&mut self, raw_config_values: HashMap<String, Value>) -> Result<(), SdkError> {
+        // only if the raw config values contains the domain key, then load the config
         if let Some(config) = raw_config_values.get(self.domain_key.as_str()) {
             self.config = serde_json::from_value(config.clone())
                 .map_err(|e| SdkError::InvalidConfig(e.to_string()))?;
-            return Ok(());
         }
+        tracing::debug!("wikipedia config: {:?}", self.config);
         Ok(())
     }
 }

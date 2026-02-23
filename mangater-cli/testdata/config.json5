@@ -6,9 +6,10 @@
             // "password": ""
         }
     },
-    "plugins: {
-        // ***** [wikipedia configs] *****
+    // **** [plugin specific config] ****
+    "plugins": {
         "wikipedia": {
+            // **** [wikipedia - need to scrap plain-text content as well???] ****
             "need_content": true
         }
     }

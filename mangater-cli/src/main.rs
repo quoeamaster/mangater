@@ -20,6 +20,8 @@ fn init_tracing(log_level: &LogLevel) {
     tracing_subscriber::fmt()
         .with_env_filter(filter)
         .with_target(false)
+        .with_file(true)
+        .with_line_number(true)
         .init();
 }
 
@@ -36,7 +38,7 @@ fn main() -> anyhow::Result<()> {
     match cli.command {
         cli::Commands::Scrap(scrap_args) => cmd::scrap(scrap_args)?,
         cli::Commands::ListDomains => {
-            match cmd::list_domains() {
+            match cmd::list_domains(cli.config_mode, cli.config) {
                 Ok(_) => {}
                 Err(e) => return Err(e),
             }

@@ -27,7 +27,10 @@ impl Engine {
         &mut self,
         config_file: String,
     ) -> Result<&AppConfigJson5, SdkError> {
-        let config_content = fs::read_to_string(config_file)?;
+        let config_content = fs::read_to_string(config_file.clone()).map_err(|e| {
+            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e.to_string()))
+        })?;
+
         let config: AppConfigJson5 =
             json5::from_str(&config_content).map_err(|e| SdkError::InvalidConfig(e.to_string()))?;
 
@@ -35,11 +38,15 @@ impl Engine {
 
         Ok(self.config.as_ref().unwrap())
     }
+
     pub fn config_load_from_json_file(
         &mut self,
         config_file: String,
     ) -> Result<&AppConfigJson5, SdkError> {
-        let config_content = fs::read_to_string(config_file)?;
+        let config_content = fs::read_to_string(config_file.clone()).map_err(|e| {
+            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e.to_string()))
+        })?;
+
         let config: AppConfigJson5 = serde_json::from_str(&config_content)
             .map_err(|e| SdkError::InvalidConfig(e.to_string()))?;
 
@@ -47,5 +54,4 @@ impl Engine {
 
         Ok(self.config.as_ref().unwrap())
     }
-    // [todo] preload json file...
 }

@@ -1,10 +1,11 @@
 use mangater_cli::cmd;
+use mangater_cli::entity::ConfigMode;
 use mangater_cli::util::engine::build_engine;
 
 #[cfg(feature = "wikipedia")]
 #[test]
 fn test_engine_registry_list_domains() {
-    let mut engine = build_engine();
+    let mut engine = build_engine(ConfigMode::Json5, Some("testdata/config.json5".to_string()));
     let domains = engine.registry().list_registered_domains();
 
     assert!(!domains.is_empty());
@@ -14,7 +15,7 @@ fn test_engine_registry_list_domains() {
 #[cfg(feature = "wikipedia")]
 #[test]
 fn test_cmd_list_domains() {
-    let result = cmd::list_domains();
+    let result = cmd::list_domains(ConfigMode::Json5, Some("testdata/config.json5".to_string()));
     assert!(result.is_ok());
 
     let domains = result.unwrap();
