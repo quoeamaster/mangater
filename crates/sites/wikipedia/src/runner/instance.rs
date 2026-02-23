@@ -2,8 +2,8 @@ use mangater_sdk::entity::{PatternAndType, PatternMatchResult, Registerable};
 use mangater_sdk::traits::{Domain, Matcher};
 use mangater_sdk::SdkError;
 
-use regex::Regex;
 use async_trait::async_trait;
+use regex::Regex;
 use tracing::warn;
 
 use once_cell::sync::Lazy;
