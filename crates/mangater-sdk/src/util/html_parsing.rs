@@ -34,36 +34,48 @@ fn clean_text(element: &ElementRef) -> String {
     text
 }
 
+/// # Example
+///
+/// ```
+/// use scraper::Html;
+/// use mangater_sdk::util::html_parsing::parse_images;
+///
+/// const CONTENT: &str = r#"<img src="cat.jpg"><img src="dog.png">"#;
+/// let images = parse_images(CONTENT.to_string());
+/// assert_eq!(images.len(), 2);
+/// assert_eq!(images[0].src, "cat.jpg");
+/// assert_eq!(images[1].src, "dog.png");
+/// ```
 pub fn parse_images(content: String) -> Vec<HtmlImage> {
     let document = Html::parse_document(&content);
     parse_images_through_html(&document)
-    // let selector = Selector::parse("img").unwrap();
-    // let images = document.select(&selector).collect::<Vec<_>>();
-    // let mut html_images = Vec::new();
-
-    // for image in images {
-    //     let src = image.value().attr("src").unwrap();
-    //     let inner_html = image.html();
-
-    //     html_images.push(HtmlImage {
-    //         src: src.to_string(),
-    //         inner_html: inner_html.to_string(),
-    //     });
-    // }
-    // html_images
 }
 
+/// Parses the provided HTML document and extracts all `<img>` elements as a collection of `HtmlImage`.
+///
+/// This utility function takes a reference to a [`scraper::Html`] document and returns a vector of
+/// [`HtmlImage`] structs, each containing the `src` attribute and the inner HTML of the image element.
+///
+/// # Arguments
+///
+/// * `document` - A reference to the parsed HTML content.
+///
+/// # Returns
+///
+/// A vector of [`HtmlImage`] structs representing all images found in the document.
+///
 fn parse_images_through_html(document: &Html) -> Vec<HtmlImage> {
     let selector = Selector::parse("img").unwrap();
     let images = document.select(&selector).collect::<Vec<_>>();
     let mut html_images = Vec::new();
     for image in images {
-        let src = image.value().attr("src").unwrap();
-        let inner_html = image.html();
-        html_images.push(HtmlImage {
-            src: src.to_string(),
-            inner_html: inner_html.to_string(),
-        });
+        if let Some(src) = image.value().attr("src") {
+            let inner_html = image.html();
+            html_images.push(HtmlImage {
+                src: src.to_string(),
+                inner_html: inner_html.to_string(),
+            });
+        }
     }
     html_images
 }
