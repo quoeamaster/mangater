@@ -32,7 +32,13 @@
 //!
 
 use crate::traits::{Config, Matcher, Storage};
+
 use std::sync::Arc;
+use std::collections::HashMap;
+
+use serde::Deserialize;
+use serde_json::Value;
+
 
 /// Represents a pattern and its associated type found on a web page.
 ///
@@ -115,4 +121,25 @@ pub struct HtmlImage {
 pub struct HtmlPlainTextAndImages {
     pub text: String,
     pub images: Vec<HtmlImage>,
+}
+
+
+#[derive(Debug, Deserialize)]
+pub struct AppConfigJson5 {
+    pub core: CoreConfig,
+
+    #[serde(default)]
+    pub plugins: HashMap<String, Value>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CoreConfig {
+    #[serde(default)]
+    pub proxy: Option<ProxyConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ProxyConfig {
+    pub username: Option<String>,
+    pub password: Option<String>,
 }

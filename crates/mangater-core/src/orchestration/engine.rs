@@ -1,4 +1,4 @@
-use crate::orchestration::model::AppConfigJson5;
+use mangater_sdk::entity::AppConfigJson5;
 use crate::orchestration::model::RegistryMapImplementation;
 use mangater_sdk::SdkError;
 use std::fs;

@@ -20,6 +20,7 @@ pub fn build_engine(
     };
     tracing::debug!("overall app config: {:?}", app_config);
 
+    // *** wikipedia plugin registration ***
     #[cfg(feature = "wikipedia")]
     {
         use mangater_sdk::traits::{Config, Domain};
