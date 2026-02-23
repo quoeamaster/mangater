@@ -12,11 +12,11 @@ pub struct Cli {
     //#[command(flatten)]
     //pub global_args: GlobalArgs,
     /// Config file path
-    #[arg(global = true, short, long)]
+    #[arg(global = true, short, long, default_value = "config.json5")]
     pub config: Option<String>,
 
     /// Config source
-    #[arg(global = true,long, value_enum, default_value_t = ConfigMode::Json)]
+    #[arg(global = true,long, value_enum, default_value_t = ConfigMode::Json5)]
     pub config_mode: ConfigMode,
 
     #[arg(global = true, short, long, value_enum, default_value_t = LogLevel::Info)]

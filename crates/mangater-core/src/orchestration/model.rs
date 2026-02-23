@@ -1,4 +1,6 @@
 use mangater_sdk::traits::Domain;
+use serde::Deserialize;
+use serde_json::Value;
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -38,6 +40,26 @@ impl mangater_sdk::traits::Registry for RegistryMapImplementation {
     fn list_registered_domains(&self) -> Vec<String> {
         self.registry.keys().cloned().collect()
     }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AppConfigJson5 {
+    pub core: CoreConfig,
+
+    #[serde(default)]
+    pub plugins: HashMap<String, Value>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CoreConfig {
+    #[serde(default)]
+    pub proxy: Option<ProxyConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ProxyConfig {
+    pub username: Option<String>,
+    pub password: Option<String>,
 }
 
 // flow on resolving a domain from a url

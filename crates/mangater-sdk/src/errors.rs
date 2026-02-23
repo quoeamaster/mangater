@@ -35,6 +35,10 @@ use thiserror::Error;
 /// - CLI
 #[derive(Debug, Error)]
 pub enum SdkError {
+    /// Invalid configuration.
+    #[error("invalid configuration: {0}")]
+    InvalidConfig(String),
+
     /// Network-level failure (HTTP, DNS, timeout, etc.)
     #[error("network error: {0}")]
     Network(String),

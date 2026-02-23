@@ -26,6 +26,9 @@
 // SOFTWARE.
 
 use crate::errors::SdkError;
+use serde_json::Value;
+use std::collections::HashMap;
+
 /// The `Config` trait defines an interface for loading configuration required by
 /// an implementation of the Mangater SDK service. Implementation may choose the
 /// actual configuration source and format (e.g. file, environment variable, remote endpoint).
@@ -36,25 +39,25 @@ use crate::errors::SdkError;
 pub trait Config: Send + Sync {
     /// Loads the configuration and returns it as a `String` wrapped in an `Option` on success,
     /// or a `SdkError` on failure.
-    fn load(&self) -> Result<Option<String>, SdkError>;
+    fn load(&mut self, raw_config_values: HashMap<String, Value>) -> Result<(), SdkError>;
 
-    /// Retrieves a specific configuration value by its string key.
-    /// The value is an Optional String, actual type conversion is up to the implementor.
-    ///
-    /// # Parameters
-    /// - `key`: The string slice representing the configuration setting to be retrieved.
-    ///
-    /// # Returns
-    /// - `Ok(Some(value))` containing the value if the specified key exists.
-    /// - `Ok(None)` if the key does not exist in the configuration source.
-    /// - `Err(SdkError)` if there is an error during the retrieval process.
-    ///
-    /// # Example
-    /// ```ignore
-    /// let value = config.config_by_key("api_token")?;
-    /// if let Some(token) = value {
-    ///     println!("API token is: {}", token);
-    /// }
-    /// ```
-    fn config_by_key(&self, key: &str) -> Result<Option<String>, SdkError>;
+    // /// Retrieves a specific configuration value by its string key.
+    // /// The value is an Optional String, actual type conversion is up to the implementor.
+    // ///
+    // /// # Parameters
+    // /// - `key`: The string slice representing the configuration setting to be retrieved.
+    // ///
+    // /// # Returns
+    // /// - `Ok(Some(value))` containing the value if the specified key exists.
+    // /// - `Ok(None)` if the key does not exist in the configuration source.
+    // /// - `Err(SdkError)` if there is an error during the retrieval process.
+    // ///
+    // /// # Example
+    // /// ```ignore
+    // /// let value = config.config_by_key("api_token")?;
+    // /// if let Some(token) = value {
+    // ///     println!("API token is: {}", token);
+    // /// }
+    // /// ```
+    // fn config_by_key(&self, key: &str) -> Result<Option<String>, SdkError>;
 }

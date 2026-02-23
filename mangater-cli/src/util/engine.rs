@@ -11,6 +11,8 @@ pub fn build_engine() -> mangater_core::orchestration::Engine {
         use site_wikipedia::WikipediaInstance;
 
         let wikipedia = WikipediaInstance::new();
+        // run config pre-load
+
         engine.registry().add_to_registry(
             Some(wikipedia.get_domain_key()),
             Arc::new(wikipedia.clone()),

@@ -56,12 +56,18 @@ pub enum PatternType {
     Resource,
     /// Used to match pagination links on the page (only focusing on the "next" pagination link).
     Pagination,
+    /// Used to scrap the plain-text content (wikipedia crate might use this)
+    Content,
+    /// the content(s) are already ready for usage (e.g. storage or further analysis)
+    ScrapedContent,
+    /// other use cases... (to be defined or custom implementations can make use of this pattery-type)
+    Others,
 }
 
 pub struct PatternMatchResult {
     pub pattern: String,
     pub pattern_type: PatternType,
-    pub resource_string: String,
+    pub resource_string: Option<String>,
 }
 
 /// Aggregates components required for registration within the Mangater SDK.

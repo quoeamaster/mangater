@@ -1,0 +1,14 @@
+{
+    "unit-test": {
+        // testing sequence
+        "sequence": "9801",
+        "message": "happy plugin dev",
+        "ip": "127.0.0.1"
+    },
+    "integration-test": {
+        // integration sequence
+        "sequence": "9802",
+        "message": "integration moments..",
+        "ip": "192.168.1.100"
+    }
+}

@@ -99,7 +99,6 @@ mod tests {
     }
 }
 
-
 // /// Example: download multiple files in parallel with a Semaphore
 // #[tokio::main]
 // async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -125,7 +124,7 @@ mod tests {
 
 //         // Acquire a permit before spawning
 //         let permit = sem.acquire_owned().await?;
-        
+
 //         let handle = task::spawn(async move {
 //             // The permit is held until this async block ends
 //             let _permit = permit;

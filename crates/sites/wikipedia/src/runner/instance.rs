@@ -1,27 +1,34 @@
-use mangater_sdk::entity::{PatternAndType, PatternMatchResult, Registerable};
-use mangater_sdk::traits::{Domain, Matcher};
+use mangater_sdk::entity::PatternType;
+use mangater_sdk::entity::{PatternMatchResult, Registerable};
+use mangater_sdk::traits::{Config, Domain, Matcher};
 use mangater_sdk::SdkError;
 
-use async_trait::async_trait;
 use regex::Regex;
-use tracing::warn;
 
 use once_cell::sync::Lazy;
+use serde_json::Value;
+use std::collections::HashMap;
 use std::sync::Arc;
+
+use crate::runner::model::WikipediaConfig;
 
 /// for wikipedia domain matching, a static regex is used to avoid recompilation on each match.
 static WIKI_REGEX: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"^https://([a-zA-Z0-9-]+\.)*wikipedia\.org(/.*)?$").unwrap());
 
+static WIKI_DOMAIN_KEY: Lazy<String> = Lazy::new(|| "wikipedia".to_string());
+
 #[derive(Clone, Debug)]
 pub struct WikipediaInstance {
     pub domain_key: String,
+    config: WikipediaConfig,
 }
 
 impl WikipediaInstance {
     pub fn new() -> Self {
         Self {
-            domain_key: "wikipedia".to_string(),
+            domain_key: WIKI_DOMAIN_KEY.to_string(),
+            config: WikipediaConfig::default(),
         }
     }
 }
@@ -56,11 +63,42 @@ impl Domain for WikipediaInstance {
     }
 }
 
-#[async_trait]
 impl Matcher for WikipediaInstance {
-    async fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult> {
-        warn!("TBD: WikipediaInstance::match_patterns");
-        Vec::new()
+    /// for wikipedia domain, there could be 2 approaches to match and scrap.
+    /// 1. provide a vector of PatternMatchResult for the engine to handle the rest.
+    /// 2. totally override the operations by calling sdk's util functions to match and scrap;
+    ///    then return a vector of PatternMatchResult for the engine to handle the rest. (type is `ScrapedContent`)
+    ///
+    /// for simplicity, will use approach 1 for now.
+    fn match_patterns(&self) -> Vec<PatternMatchResult> {
+        let mut results = Vec::new();
+
+        // means scrap the images based on <img> tag
+        results.push(PatternMatchResult {
+            pattern: "img".to_string(),
+            pattern_type: PatternType::Resource,
+            resource_string: None,
+        });
+        // need to scrap the plain-text content???
+        if self.config.need_content {
+            results.push(PatternMatchResult {
+                pattern: "#mw-content-text".to_string(),
+                pattern_type: PatternType::Content,
+                resource_string: None,
+            });
+        }
+        results
+    }
+}
+
+impl Config for WikipediaInstance {
+    fn load(&mut self, raw_config_values: HashMap<String, Value>) -> Result<(), SdkError> {
+        if let Some(config) = raw_config_values.get(self.domain_key.as_str()) {
+            self.config = serde_json::from_value(config.clone())
+                .map_err(|e| SdkError::InvalidConfig(e.to_string()))?;
+            return Ok(());
+        }
+        Ok(())
     }
 }
 

@@ -1,0 +1,15 @@
+{
+    // **** [core / engine sharable config] ****
+    "core": {
+        "proxy": {
+            // "username": "",
+            // "password": ""
+        }
+    },
+    "plugins: {
+        // ***** [wikipedia configs] *****
+        "wikipedia": {
+            "need_content": true
+        }
+    }
+}

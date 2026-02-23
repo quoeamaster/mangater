@@ -24,8 +24,9 @@ pub struct ScrapArgs {
 
 #[derive(Clone, ValueEnum, Debug)]
 pub enum ConfigMode {
+    Json5,
     Json,
-    Env,
+    //Env,
 }
 
 #[derive(Clone, ValueEnum, Debug, Default)]
