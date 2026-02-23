@@ -100,3 +100,13 @@ pub struct Registerable {
     pub storage: Option<Arc<dyn Storage + Send + Sync>>,
 }
 // Box<dyn Domain>
+
+pub struct HtmlImage {
+    pub src: String,
+    pub inner_html: String,
+}
+
+pub struct HtmlPlainTextAndImages {
+    pub text: String,
+    pub images: Vec<HtmlImage>,
+}

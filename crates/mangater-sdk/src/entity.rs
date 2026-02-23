@@ -27,4 +27,7 @@
 
 mod model;
 
-pub use model::{PatternAndType, PatternMatchResult, PatternType, Registerable};
+pub use model::{
+    HtmlImage, HtmlPlainTextAndImages, PatternAndType, PatternMatchResult, PatternType,
+    Registerable,
+};

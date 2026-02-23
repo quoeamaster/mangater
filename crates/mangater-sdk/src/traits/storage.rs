@@ -28,10 +28,13 @@
 use crate::entity::PatternMatchResult;
 use crate::errors::SdkError;
 
+use async_trait::async_trait;
+
 /// The `Storage` trait defines the interface for persisting resources extracted by the Mangater SDK.
 ///
 /// Implementors are responsible for defining how and where the resource and its associated content bytes
 /// are stored (e.g., filesystem, database, remote blob storage, etc.).
+#[async_trait]
 pub trait Storage: Send + Sync {
     /// Persists the given resource and its content.
     ///
@@ -43,7 +46,7 @@ pub trait Storage: Send + Sync {
     /// # Returns
     ///
     /// * `Result<(), SdkError>` - Returns `Ok(())` if the resource was successfully persisted, or an `SdkError` if an error occurred.
-    fn persist(
+    async fn persist(
         &self,
         resource: &PatternMatchResult,
         resource_content: Vec<u8>,

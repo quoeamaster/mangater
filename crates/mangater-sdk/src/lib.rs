@@ -27,6 +27,7 @@
 
 pub mod entity;
 pub mod traits;
+pub mod util;
 
 mod errors;
 

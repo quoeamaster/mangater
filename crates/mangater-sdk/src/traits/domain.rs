@@ -27,7 +27,6 @@
 
 use crate::entity::Registerable;
 use crate::errors::SdkError;
-use crate::traits::Registry;
 
 /// The `Domain` trait provides an interface for matching a given domain string
 /// to determine if it is supported or recognized by an implementation.

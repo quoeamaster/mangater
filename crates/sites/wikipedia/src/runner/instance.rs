@@ -77,8 +77,9 @@ impl Matcher for WikipediaInstance {
 //     }
 // }
 
+// #[async_trait]
 // impl Storage for WikipediaInstance {
-//     fn persist(
+//     async fn persist(
 //         &self,
 //         resource: &PatternMatchResult,
 //         resource_content: Vec<u8>,

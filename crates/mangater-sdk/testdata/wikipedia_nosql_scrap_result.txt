@@ -1,0 +1,560 @@
+Image src: /static/images/icons/enwiki-25.svg, class: mw-logo-icon
+Image src: /static/images/mobile/copyright/wikipedia-wordmark-en-25.svg, class: mw-logo-wordmark
+Image src: /static/images/mobile/copyright/wikipedia-tagline-en-25.svg, class: mw-logo-tagline
+Image src: //upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Last.fm_software_screenshot.png/250px-Last.fm_software_screenshot.png, class: mw-file-element
+Image src: //upload.wikimedia.org/wikipedia/en/thumb/9/96/Symbol_category_class.svg/20px-Symbol_category_class.svg.png, class: mw-file-element
+Image src: //upload.wikimedia.org/wikipedia/commons/thumb/4/41/Global_thinking.svg/20px-Global_thinking.svg.png, class: mw-file-element
+Image src: /static/images/footer/wikimedia.svg
+Image src: /w/resources/assets/mediawiki_compact.svg
+ 
+   Database class for storage and retrieval of modeled data 
+ "Structured storage" redirects here. For the Microsoft technology, see COM Structured Storage. 
+ 
+  NoSQL (originally meaning "Not only SQL" or "non-relational")[1] refers to a type of database design that stores and retrieves data differently from the traditional table-based structure of relational databases. Unlike relational databases, which organize data into rows and columns like a spreadsheet, NoSQL databases use a single data structure—such as key–value pairs, wide columns, graphs, or documents—to hold information. Since this non-relational design does not require a fixed schema, it scales easily to manage large, often unstructured datasets.[2] NoSQL systems are sometimes called "Not only SQL" because they can support SQL-like query languages or work alongside SQL databases in polyglot-persistent setups, where multiple database types are combined.[3][4] Non-relational databases date back to the late 1960s, but the term "NoSQL" emerged in the early 2000s, spurred by the needs of Web 2.0 companies like social media platforms.[5][6]
+  NoSQL databases are popular in big data and real-time web applications due to their simple design, ability to scale across clusters of machines (called horizontal scaling), and precise control over data availability.[7][8] These structures can speed up certain tasks and are often considered more adaptable than fixed database tables.[9] However, many NoSQL systems prioritize speed and availability over strict consistency (per the CAP theorem), using eventual consistency—where updates reach all nodes eventually, typically within milliseconds, but may cause brief delays in accessing the latest data, known as stale reads.[10] While most lack full ACID transaction support, some, like MongoDB, include it as a key feature.[11]
+ 
+
+  Barriers to adoption [edit] 
+ Barriers to wider NoSQL adoption include their use of low-level query languages instead of SQL, inability to perform ad hoc joins across tables, lack of standardized interfaces, and significant investments already made in relational databases.[12] Some NoSQL systems risk losing data through lost writes or other forms, though features like write-ahead logging—a method to record changes before they’re applied—can help prevent this.[13][14] For distributed transaction processing across multiple databases, keeping data consistent is a challenge for both NoSQL and relational systems, as relational databases cannot enforce rules linking separate databases, and few systems support both ACID transactions and X/Open XA standards for managing distributed updates.[15][16] Limitations within the interface environment are overcome using semantic virtualization protocols, such that NoSQL services are accessible to most operating systems.[17]
+ 
+  History [edit] 
+Last.fm Player
+ The term NoSQL was used by Carlo Strozzi in 1998 to name his lightweight Strozzi NoSQL open-source relational database that did not expose the standard Structured Query Language (SQL) interface, but was still relational.[18] His NoSQL RDBMS is distinct from the around-2009 general concept of NoSQL databases.  Strozzi suggests that, because the current NoSQL movement "departs from the relational model altogether, it should therefore have been called more appropriately 'NoREL'",[19] referring to "not relational".
+  Johan Oskarsson, then a developer at Last.fm, reintroduced the term NoSQL in early 2009 when he organized an event to discuss "open-source distributed, non-relational databases".[20] The name attempted to label the emergence of an increasing number of non-relational, distributed data stores, including open source clones of Google's Bigtable/MapReduce and Amazon's DynamoDB.
+ 
+  Types and examples [edit] 
+ There are various ways to classify NoSQL databases, with different categories and subcategories, some of which overlap. What follows is a non-exhaustive classification by data model, with examples:[21]
+ 
+
+
+
+Type
+Notable examples of this type
+
+
+Key–value cache
+Apache Ignite, Couchbase, Coherence, eXtreme Scale, Hazelcast, Infinispan, Memcached, Redis, Velocity
+
+
+Key–value store
+Azure Cosmos DB, ArangoDB, Amazon DynamoDB, Aerospike, Couchbase, ScyllaDB
+
+
+Key–value store (eventually consistent)
+Azure Cosmos DB, Oracle NoSQL Database, Riak, Voldemort
+
+
+Key–value store (ordered)
+FoundationDB, InfinityDB, LMDB, MemcacheDB
+
+
+Tuple store
+Apache River, GigaSpaces, Tarantool, TIBCO ActiveSpaces, OpenLink Virtuoso
+
+
+Triplestore
+
+AllegroGraph, MarkLogic, Ontotext-OWLIM, Oracle NoSQL database, Profium Sense, Virtuoso Universal Server
+
+
+Object database
+Objectivity/DB, Perst, ZODB, db4o, GemStone/S, InterSystems Caché, JADE, ObjectDatabase++, ObjectDB, ObjectStore, ODABA, Realm, OpenLink Virtuoso, Versant Object Database, Indexed Database API
+
+
+Document store
+Azure Cosmos DB, ArangoDB, BaseX, Clusterpoint, Couchbase, CouchDB, DocumentDB, eXist-db, Google Cloud Firestore, IBM Domino, MarkLogic, MongoDB, RavenDB, Qizx, RethinkDB, Elasticsearch, OrientDB
+
+
+Wide-column store
+Azure Cosmos DB, Amazon DynamoDB, Bigtable, Cassandra, Google Cloud Datastore, HBase, Hypertable, ScyllaDB
+
+
+Native multi-model database
+ArangoDB, Azure Cosmos DB, OrientDB, MarkLogic, Apache Ignite,[22][23] Couchbase, FoundationDB, Oracle Database, AgensGraph
+
+
+Graph database
+
+Azure Cosmos DB, AllegroGraph, ArangoDB, Apache Giraph, GUN (Graph Universe Node), InfiniteGraph,  MarkLogic, Neo4J, OrientDB, Virtuoso
+
+
+Multivalue database
+
+D3 Pick database, Extensible Storage Engine (ESE/NT), InfinityDB, InterSystems Caché, jBASE Pick database, mvBase Rocket Software, mvEnterprise Rocket Software, Northgate Information Solutions Reality (the original Pick/MV Database), OpenQM, Revelation Software's OpenInsight (Windows) and Advanced Revelation (DOS), UniData Rocket U2, UniVerse Rocket U2
+
+  Key–value store [edit] 
+ Main article: Key–value database 
+ Key–value (KV) stores use the associative array (also called a map or dictionary) as their fundamental data model. In this model, data is represented as a collection of key–value pairs, such that each possible key appears at most once in the collection.[24][25]
+  The key–value model is one of the simplest non-trivial data models, and richer data models are often implemented as an extension of it. The key–value model can be extended to a discretely ordered model that maintains keys in lexicographic order. This extension is computationally powerful, in that it can efficiently retrieve selective key ranges.[26]
+  Key–value stores can use consistency models ranging from eventual consistency to serializability. Some databases support ordering of keys. There are various hardware implementations, and some users store data in memory (RAM), while others on solid-state drives (SSD) or rotating disks (aka hard disk drive (HDD)).
+ 
+  Document store [edit] 
+ Main articles: Document-oriented database and XML database 
+ The central concept of a document store is that of a "document". While the details of this definition differ among document-oriented databases, they all assume that documents encapsulate and encode data (or information) in some standard formats or encodings. Encodings in use include XML, YAML, and JSON and binary forms like BSON. Documents are addressed in the database via a unique key that represents that document. Another defining characteristic of a document-oriented database is an API or query language to retrieve documents based on their contents.
+  Different implementations offer different ways of organizing and/or grouping documents:
+ 
+ Collections 
+ Tags 
+ Non-visible metadata 
+ Directory hierarchies 
+ Compared to relational databases, collections could be considered analogous to tables and documents analogous to records. But they are different – every record in a table has the same sequence of fields, while documents in a collection may have fields that are completely different.
+ 
+  Graph [edit] 
+ Main article: Graph database 
+ Graph databases are designed for data whose relations are well represented as a graph consisting of elements connected by a finite number of relations. Examples of data include social relations, public transport links, road maps, network topologies, etc.
+ 
+Graph databases and their query language
+
+
+Name
+Language(s)
+Notes
+
+
+AgensGraph
+Cypher
+Multi-model graph database
+
+
+AllegroGraph
+SPARQL
+RDF triple store
+
+
+Amazon Neptune
+Gremlin, SPARQL
+Graph database
+
+
+ArangoDB
+AQL, JavaScript, GraphQL
+Multi-model DBMS Document, Graph database and Key-value store
+
+
+Azure Cosmos DB
+Gremlin
+Graph database
+
+
+DEX/Sparksee
+C++, Java, C#, Python
+Graph database
+
+
+FlockDB
+Scala
+Graph database
+
+
+GUN (Graph Universe Node)
+JavaScript
+Graph database
+
+
+IBM Db2
+SPARQL
+RDF triple store added in DB2 10
+
+
+InfiniteGraph
+Java
+Graph database
+
+
+JanusGraph
+Java
+Graph database
+
+
+MarkLogic
+Java, JavaScript, SPARQL, XQuery
+Multi-model document database and RDF triple store
+
+
+Neo4j
+Cypher
+Graph database
+
+
+OpenLink Virtuoso
+C++, C#, Java, SPARQL
+Middleware and database engine hybrid
+
+
+Oracle
+SPARQL 1.1
+RDF triple store added in 11g
+
+
+OrientDB
+Java, SQL
+Multi-model document and graph database
+
+
+OWLIM
+Java, SPARQL 1.1
+RDF triple store
+
+
+Profium Sense
+Java, SPARQL
+RDF triple store
+
+
+RedisGraph
+Cypher
+Graph database
+
+
+Sqrrl Enterprise
+Java
+Graph database
+
+
+TerminusDB
+
+JavaScript, Python, datalog
+
+Open source RDF triple-store and document store[27]
+
+  Performance [edit] 
+ The performance of NoSQL databases is usually evaluated using the metric of throughput, which is measured as operations per second. Performance evaluation must pay attention to the right benchmarks such as production configurations, parameters of the databases, anticipated data volume, and concurrent user workloads.
+  Ben Scofield rated different categories of NoSQL databases as follows:[28]
+ 
+
+
+Data model
+Performance
+Scalability
+Flexibility
+Complexity
+Data integrity
+Functionality
+
+
+Key–value store
+high
+high
+high
+none
+low
+variable (none)
+
+
+Column-oriented store
+high
+high
+moderate
+low
+low
+minimal
+
+
+Document-oriented store
+high
+variable (high)
+high
+low
+low
+variable (low)
+
+
+Graph database
+variable
+variable
+high
+high
+low-med
+graph theory
+
+
+Relational database
+variable
+variable
+low
+moderate
+high
+relational algebra
+
+ Performance and scalability comparisons are most commonly done using the YCSB benchmark.
+ 
+  Handling relational data [edit] 
+ Since most NoSQL databases lack ability for joins in queries, the database schema generally needs to be designed differently. There are three main techniques for handling relational data in a NoSQL database. (See table join and ACID support for NoSQL databases that support joins.)
+ 
+  Multiple queries [edit] 
+ Instead of retrieving all the data with one query, it is common to do several queries to get the desired data. NoSQL queries are often faster than traditional SQL queries, so the cost of additional queries may be acceptable. If an excessive number of queries would be necessary, one of the other two approaches is more appropriate.
+ 
+  Caching, replication and non-normalized data [edit] 
+ Instead of only storing foreign keys, it is common to store actual foreign values along with the model's data. For example, each blog comment might include the username in addition to a user id, thus providing easy access to the username without requiring another lookup. When a username changes, however, this will now need to be changed in many places in the database. Thus this approach works better when reads are much more common than writes.[29]
+ 
+  Nesting data [edit] 
+ With document databases like MongoDB it is common to put more data in a smaller number of collections. For example, in a blogging application, one might choose to store comments within the blog post document, so that with a single retrieval one gets all the comments. Thus in this approach a single document contains all the data needed for a specific task.
+ 
+  ACID and join support [edit] 
+ A database is marked as supporting ACID properties (atomicity, consistency, isolation, durability) or join operations if the documentation for the database makes that claim. However, this doesn't necessarily mean that the capability is fully supported in a manner similar to most SQL databases.
+ 
+
+
+Database
+ACID
+Joins
+
+
+Aerospike
+Yes
+No
+
+
+AgensGraph
+Yes
+Yes
+
+
+Apache Ignite
+Yes
+Yes
+
+
+ArangoDB
+Yes
+Yes
+
+
+Amazon DynamoDB
+Yes
+No
+
+
+Couchbase
+Yes
+Yes
+
+
+CouchDB
+Yes
+Yes
+
+
+IBM Db2
+Yes
+Yes
+
+
+InfinityDB
+Yes
+No
+
+
+LMDB
+Yes
+No
+
+
+MarkLogic
+Yes
+Yes[nb 1]
+
+
+MongoDB
+Yes
+Yes[nb 2]
+
+
+OrientDB
+Yes
+Yes[nb 3]
+
+ 
+ 
+ ^ Joins do not necessarily apply to document databases, but MarkLogic can do joins using semantics.[30]
+ 
+ ^ MongoDB did not support joining from a sharded collection until version 5.1.[31]
+ 
+ ^ OrientDB can resolve 1:1 joins using links by storing direct links to foreign records.[32]
+ 
+  
+  Query optimization and indexing in NoSQL databases [edit] 
+ Different NoSQL databases, such as DynamoDB, MongoDB, Cassandra, Couchbase, HBase, and Redis, exhibit varying behaviors when querying non-indexed fields. Many perform full-table or collection scans for such queries, applying filtering operations after retrieving data. However, modern NoSQL databases often incorporate advanced features to optimize query performance. For example, MongoDB supports compound indexes and query-optimization strategies, Cassandra offers secondary indexes and materialized views, and Redis employs custom indexing mechanisms tailored to specific use cases. Systems like Elasticsearch use inverted indexes for efficient text-based searches, but they can still require full scans for non-indexed fields. This behavior reflects the design focus of many NoSQL systems on scalability and efficient key-based operations rather than optimized querying for arbitrary fields. Consequently, while these databases excel at basic CRUD operations and key-based lookups, their suitability for complex queries involving joins or non-indexed filtering varies depending on the database type—document, key–value, wide-column, or graph—and the specific implementation.[33]
+ 
+  See also [edit] 
+ CAP theorem 
+ Comparison of object database management systems 
+ Comparison of structured storage software 
+ Database scalability 
+ Distributed cache 
+ Faceted search 
+ List of NoSQL software and tools 
+ MultiValue database 
+ Multi-model database 
+ Schema-agnostic databases 
+ Triplestore 
+ Vector database 
+  References [edit] 
+ 
+ ^ http://nosql-database.org/ "NoSQL DEFINITION: Next Generation Databases mostly addressing some of the points : being non-relational, distributed, open-source and horizontally scalable".
+ 
+ ^ "What Is a NoSQL Database? | IBM". www.ibm.com. 12 December 2022. Retrieved 9 August 2024.
+ 
+ ^ "NoSQL (Not Only SQL)". NoSQL database, also called Not Only SQL
+ 
+ ^ Fowler, Martin. "NosqlDefinition". many advocates of NoSQL say that it does not mean a "no" to SQL, rather it means Not Only SQL
+ 
+ ^ Mohan, C. (2013). History Repeats Itself: Sensible and NonsenSQL Aspects of the NoSQL Hoopla (PDF). Proc. 16th Int'l Conf. on Extending Database Technology.
+ 
+ ^ "Amazon Goes Back to the Future With 'NoSQL' Database". WIRED. 19 January 2012. Retrieved 6 March 2017.
+ 
+ ^ Leavitt, Neal (2010). "Will NoSQL Databases Live Up to Their Promise?" (PDF). IEEE Computer. 43 (2): 12–14. Bibcode:2010Compr..43b..12L. doi:10.1109/MC.2010.58. S2CID 26876882.
+ 
+ ^ "RDBMS dominate the database market, but NoSQL systems are catching up". DB-Engines.com. 21 November 2013. Archived from the original on 24 November 2013. Retrieved 24 November 2013.
+ 
+ ^ Vogels, Werner (18 January 2012). "Amazon DynamoDB – a Fast and Scalable NoSQL Database Service Designed for Internet Scale Applications". All Things Distributed. Retrieved 6 March 2017.
+ 
+ ^ "Jepsen: MongoDB stale reads". Aphyr.com. 20 April 2015. Retrieved 6 March 2017.
+ 
+ ^ "MongoDB ACID Transactions". GeeksforGeeks. 12 March 2024. Retrieved 25 October 2024.
+ 
+ ^ Grolinger, K.; Higashino, W. A.; Tiwari, A.; Capretz, M. A. M. (2013). "Data management in cloud environments: NoSQL and NewSQL data stores" (PDF). Aira, Springer. Retrieved 8 January 2014.
+ 
+ ^ "Large volume data analysis on the Typesafe Reactive Platform". Slideshare.net. 11 June 2015. Retrieved 6 March 2017.
+ 
+ ^ Fowler, Adam. "10 NoSQL Misconceptions". Dummies.com. Retrieved 6 March 2017.
+ 
+ ^ "No! to SQL and No! to NoSQL". Iggyfernandez.wordpress.com. 29 July 2013. Retrieved 6 March 2017.
+ 
+ ^ Chapple, Mike. "The ACID Model". about.com. Archived from the original on 29 December 2016. Retrieved 26 September 2012.
+ 
+ ^ Lawrence, Integration and virtualization of relational SQL and NoSQL systems including MySQL and MongoDB (2014). "Integration and virtualization of relational SQL and NoSQL systems including MySQL and MongoDB". International Conference on Computational Science and Computational Intelligence 1.
+ 
+ ^ Lith, Adam; Mattson, Jakob (2010). "Investigating storage solutions for large data: A comparison of well performing and scalable data storage solutions for real time extraction and batch insertion of data" (PDF). Department of Computer Science and Engineering, Chalmers University of Technology. p. 70. Retrieved 12 May 2011.
+ 
+ ^ "NoSQL Relational Database Management System: Home Page". Strozzi.it. 2 October 2007. Retrieved 29 March 2010.
+ 
+ ^ "NoSQL 2009". Blog.sym-link.com. 12 May 2009. Archived from the original on 16 July 2011. Retrieved 29 March 2010.
+ 
+ ^ Strauch, Christof. "NoSQL Databases" (PDF). pp. 23–24. Retrieved 27 August 2017.
+ 
+ ^ https://apacheignite.readme.io/docs Ignite Documentation
+ 
+ ^ https://www.infoworld.com/article/3135070/data-center/fire-up-big-data-processing-with-apache-ignite.html fire-up-big-data-processing-with-apache-ignite
+ 
+ ^ Sandy (14 January 2011). "Key Value stores and the NoSQL movement". Stackexchange. Retrieved 1 January 2012. Key–value stores allow the application developer to store schema-less data. This data usually consists of a string that represents the key, and the actual data that is considered the value in the "key–value" relationship. The data itself is usually some kind of primitive of the programming language (a string, an integer, or an array) or an object that is being marshaled by the programming language's bindings to the key-value store. This structure replaces the need for a fixed data model and allows proper formatting.
+ 
+ ^ Seeger, Marc (21 September 2009). "Key-Value Stores: a practical overview" (PDF). Marc Seeger. Retrieved 1 January 2012. Key–value stores provide a high-performance alternative to relational database systems with respect to storing and accessing data. This paper provides a short overview of some of the currently available key–value stores and their interface to the Ruby programming language.
+ 
+ ^ Katsov, Ilya (1 March 2012). "NoSQL Data Modeling Techniques". Ilya Katsov. Retrieved 8 May 2014.
+ 
+ ^ "TerminusDB an open-source in-memory document graph database". terminusdb.com. Retrieved 16 December 2021.
+ 
+ ^ Scofield, Ben (14 January 2010). "NoSQL - Death to Relational Databases(?)". Retrieved 26 June 2014.
+ 
+ ^ 
+"Moving From Relational to NoSQL: How to Get Started". Couchbase.com. Retrieved 11 November 2019.
+ 
+ ^ "Can't do joins with MarkLogic? It's just a matter of Semantics! - General Networks". Gennet.com. Archived from the original on 3 March 2017. Retrieved 6 March 2017.
+ 
+ ^ "Sharded Collection Restrictions". docs.mongodb.com. Retrieved 24 January 2020.
+ 
+ ^ "SQL Reference · OrientDB Manual". OrientDB.com. Retrieved 24 January 2020.
+ 
+ ^ Sullivan, Dan. NoSQL for Mere Mortals. ISBN 978-0134023212.
+ 
+ 
+  Further reading [edit] 
+ Sadalage, Pramod; Fowler, Martin (2012). NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence. Addison-Wesley. ISBN 978-0-321-82662-6. 
+ McCreary, Dan; Kelly, Ann (2013). Making Sense of NoSQL: A guide for managers and the rest of us. Manning. ISBN 9781617291074. 
+ Wiese, Lena (2015). Advanced Data Management for SQL, NoSQL, Cloud and Distributed Databases. DeGruyter/Oldenbourg. ISBN 978-3-11-044140-6. 
+ Strauch, Christof (2012). "NoSQL Databases" (PDF). 
+ Moniruzzaman, A. B.; Hossain, S. A. (2013). "NoSQL Database: New Era of Databases for Big data Analytics - Classification, Characteristics and Comparison". arXiv:1307.0191 [cs.DB]. 
+ Orend, Kai (2013). "Analysis and Classification of NoSQL Databases and Evaluation of their Ability to Replace an Object-relational Persistence Layer". CiteSeerX 10.1.1.184.483. 
+ Krishnan, Ganesh; Kulkarni, Sarang; Dadbhawala, Dharmesh Kirit. "Method and system for versioned sharing, consolidating and reporting information". 
+  External links [edit] 
+ Strauch, Christof. "NoSQL whitepaper" (PDF). Stuttgart: Hochschule der Medien. 
+ Edlich, Stefan. "NoSQL database List". 
+ Neubauer, Peter (2010). "Graph Databases, NOSQL and Neo4j". 
+ Bushik, Sergey (2012). "A vendor-independent comparison of NoSQL databases: Cassandra, HBase, MongoDB, Riak". NetworkWorld. 
+ Zicari, Roberto V. (2014). "NoSQL Data Stores – Articles, Papers, Presentations". odbms.org. 
+     v  t  e   Database management systems Types 
+ Object-oriented
+ comparison  
+ Relational
+ list 
+ comparison  
+ Key–value 
+ Column-oriented
+ list  
+ Document-oriented 
+ Wide-column store 
+ Graph 
+ NoSQL 
+ NewSQL 
+ In-memory
+ list  
+ Multi-model
+ comparison  
+ Cloud 
+ Blockchain-based database 
+ Concepts 
+ Database 
+ ACID 
+ Armstrong's axioms 
+ Codd's 12 rules 
+ CAP theorem 
+ CRUD 
+ Null 
+ Candidate key 
+ Foreign key 
+ PACELC design principle 
+ Superkey 
+ Surrogate key 
+ Unique key 
+ Objects 
+ Relation
+ table 
+ column 
+ row  
+ View 
+ Transaction 
+ Transaction log 
+ Trigger 
+ Index 
+ Stored procedure 
+ Cursor 
+ Partition 
+ Components 
+ Concurrency control 
+ Data dictionary 
+ JDBC 
+ XQJ 
+ ODBC 
+ Query language 
+ Query optimizer 
+ Query rewriting system 
+ Query plan 
+ Functions 
+ Administration 
+ Query optimization 
+ Replication 
+ Sharding 
+ Related topics 
+ Database models 
+ Database normalization 
+ Database storage 
+ Distributed database 
+ Federated database system 
+ Referential integrity 
+ Relational algebra 
+ Relational calculus 
+ Relational model 
+ Object–relational database 
+ Transaction processing 
+ List of SQL software and tools 
+  
+  Category 
+  Outline 
+  
+
+
+
+
+ <img src="https://en.wikipedia.org/wiki/Special:CentralAutoLogin/start?useformat=desktop&amp;type=1x1&amp;usesul3=1" alt="" width="1" height="1" style="border: none; position: absolute;">
+ Retrieved from "https://en.wikipedia.org/w/index.php?title=NoSQL&oldid=1335450843" 
