@@ -1,0 +1,6 @@
+unused-features analyze
+
+# cargo unused-features build-report --input "C:/some_path/to/project/report.json"
+# cargo unused-features prune --input "C:/some_path/to/project/report.json"
+
+# /run_shaking_features.sh 2> report.txt
