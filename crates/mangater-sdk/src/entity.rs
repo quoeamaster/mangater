@@ -28,6 +28,6 @@
 mod model;
 
 pub use model::{
-    HtmlImage, HtmlPlainTextAndImages, PatternAndType, PatternMatchResult, PatternType,
-    Registerable, AppConfigJson5, CoreConfig, ProxyConfig,
+    AppConfigJson5, CoreConfig, HtmlImage, HtmlPlainTextAndImages, PatternAndType,
+    PatternMatchResult, PatternType, ProxyConfig, Registerable,
 };

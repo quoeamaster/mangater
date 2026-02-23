@@ -40,7 +40,6 @@ impl Registry for RegistryMapImplementation {
     }
 }
 
-
 // flow on resolving a domain from a url
 
 // URL

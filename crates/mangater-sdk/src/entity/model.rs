@@ -33,12 +33,11 @@
 
 use crate::traits::{Config, Matcher, Storage};
 
-use std::sync::Arc;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use serde::Deserialize;
 use serde_json::Value;
-
 
 /// Represents a pattern and its associated type found on a web page.
 ///
@@ -122,7 +121,6 @@ pub struct HtmlPlainTextAndImages {
     pub text: String,
     pub images: Vec<HtmlImage>,
 }
-
 
 #[derive(Debug, Deserialize)]
 pub struct AppConfigJson5 {
