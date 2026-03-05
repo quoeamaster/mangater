@@ -52,7 +52,7 @@ pub enum SdkError {
     NotFound(String),
 
     /// Website structure changed or unsupported format.
-    #[error("unsupported site structure: {0}")]
+    #[error("unsupported domain: {0}")]
     Unsupported(String),
 
     /// Rate limited by remote server.

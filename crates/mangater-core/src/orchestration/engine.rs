@@ -1,5 +1,6 @@
 use crate::orchestration::model::RegistryMapImplementation;
 use mangater_sdk::entity::AppConfigJson5;
+use mangater_sdk::traits::Registry;
 use mangater_sdk::SdkError;
 use std::fs;
 
@@ -53,5 +54,23 @@ impl Engine {
         self.config = Some(config);
 
         Ok(self.config.as_ref().unwrap())
+    }
+}
+
+impl Engine {
+    pub async fn run_scrap_workflow(&self, url: String) -> Result<(), SdkError> {
+        let domain = self.registry.resolve_domain(url.as_str());
+        // actually if no Domain found, not supported and throw an error
+        if domain.is_none() {
+            return Err(SdkError::Unsupported(url.to_string()));
+        }
+        if let Some(domain) = domain {
+            let patterns = domain.get_domain_registerable().matcher.match_patterns();
+            tracing::info!("patterns: {:?}", patterns);
+
+            // next...
+            // check the patterns and check if need to scrap OR the content already ready for storage...
+        }
+        Ok(())
     }
 }

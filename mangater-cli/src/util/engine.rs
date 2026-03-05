@@ -28,8 +28,10 @@ pub fn build_engine(
 
         let mut wikipedia = WikipediaInstance::new();
         // run config pre-load
+        // [lesson] only the plugin that requires a custom config section would need to implement the Config trait
         wikipedia.load(app_config.plugins.clone()).unwrap();
 
+        // register the wikipedia domain / plugin to the engine's registry
         engine.registry().add_to_registry(
             Some(wikipedia.get_domain_key()),
             Arc::new(wikipedia.clone()),

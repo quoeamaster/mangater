@@ -69,6 +69,7 @@ pub enum PatternType {
     Others,
 }
 
+#[derive(Debug, Clone)]
 pub struct PatternMatchResult {
     pub pattern: String,
     pub pattern_type: PatternType,

@@ -69,6 +69,8 @@ pub async fn download_resource_to_file(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use futures::stream::{self};
+    use futures_util::StreamExt;
     use std::fs;
 
     #[tokio::test]
@@ -97,7 +99,69 @@ mod tests {
 
         Ok(())
     }
+
+    /// test downloading multiple resources in parallel using a stream approach.
+    #[tokio::test]
+    async fn test_download_resources_in_parallel() -> Result<(), SdkError> {
+        // declare a struct for holding url and file_path
+        struct UrlFile {
+            url: String,
+            file_path: String,
+        }
+        let urls = vec![
+            UrlFile {
+                url: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Last.fm_software_screenshot.png/250px-Last.fm_software_screenshot.png".to_string(),
+                file_path: "testdata/parallel_download/250px-Last.fm_software_screenshot.png".to_string(),
+            },
+            UrlFile {
+                url: "https://en.wikipedia.org/static/images/icons/enwiki-25.svg".to_string(),
+                file_path: "testdata/parallel_download/enwiki-25.svg".to_string(),
+            },
+            UrlFile {
+                url: "https://en.wikipedia.org/w/resources/assets/mediawiki_compact.svg".to_string(),
+                file_path: "testdata/parallel_download/mediawiki_compact.svg".to_string(),
+            },
+        ];
+
+        let results = stream::iter(urls)
+            .map(|url_file| async move {
+                let result = download_resource_to_file(
+                    url_file.url.to_string(),
+                    None,
+                    url_file.file_path.to_string(),
+                )
+                .await;
+                if let Err(err) = result {
+                    tracing::error!("error downloading resource: {} {:?}", url_file.url, err);
+                }
+            })
+            .buffer_unordered(5)
+            .collect::<Vec<_>>()
+            .await;
+
+        for result in results {
+            println!("result: {:?}", result);
+        }
+
+        Ok(())
+    }
 }
+
+// preferred approach...
+
+// let results: Vec<DownloadResult> = stream::iter(patterns)
+//     .map(|pattern| async move {
+//         self.process_pattern(pattern).await
+//     })
+//     .buffer_unordered(self.config.max_concurrency)
+//     .collect()
+//     .await;
+
+// match pattern.pattern_type {
+//     PatternType::PlainText => self.fetch_text(pattern).await,
+//     PatternType::BinaryResource => self.fetch_binary(pattern).await,
+//     PatternType::Ready => self.handle_ready(pattern).await,
+// }
 
 // /// Example: download multiple files in parallel with a Semaphore
 // #[tokio::main]

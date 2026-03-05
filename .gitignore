@@ -24,4 +24,9 @@ target
 **/report.json
 report.features
 
+# sdk testdata
+**/testdata/parallel_download/
+
+# all DS_Store
+**/.DS_Store
 

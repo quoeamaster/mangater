@@ -557,4 +557,4 @@ Yes[nb 3]
 
 
  <img src="https://en.wikipedia.org/wiki/Special:CentralAutoLogin/start?useformat=desktop&amp;type=1x1&amp;usesul3=1" alt="" width="1" height="1" style="border: none; position: absolute;">
- Retrieved from "https://en.wikipedia.org/w/index.php?title=NoSQL&oldid=1335450843" 
+ Retrieved from "https://en.wikipedia.org/w/index.php?title=NoSQL&oldid=1340550740" 

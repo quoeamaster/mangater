@@ -13,7 +13,6 @@ fn clean_text(element: &ElementRef) -> String {
             Node::Element(e) if e.name() != "style" && e.name() != "script" => {
                 if let Some(child_elem) = ElementRef::wrap(node) {
                     let child_text = clean_text(&child_elem);
-
                     // Insert space only for block elements
                     //println!("*Child element: {}", e.name());
                     match e.name() {
