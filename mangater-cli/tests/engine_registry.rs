@@ -1,6 +1,6 @@
 use mangater_cli::cmd;
 use mangater_cli::entity::ConfigMode;
-use mangater_cli::util::engine::build_engine;
+use mangater_cli::util::cli_engine::build_engine;
 
 #[cfg(feature = "wikipedia")]
 #[test]

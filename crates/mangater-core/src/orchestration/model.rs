@@ -26,13 +26,15 @@ impl Registry for RegistryMapImplementation {
         self.registry.insert(new_key, domain);
     }
 
-    fn resolve_domain(&self, url: &str) -> Option<Arc<dyn Domain>> {
-        for domain in self.registry.values() {
-            if let Ok(true) = domain.match_domain(url.to_string()) {
-                return Some(Arc::clone(domain));
+    fn resolve_domain(&self, url: &str) -> (Option<Arc<dyn Domain>>, String) {
+        for domain_key in self.registry.keys() {
+            if let Some(domain) = self.registry.get(domain_key) {
+                if let Ok(true) = domain.match_domain(url.to_string()) {
+                    return (Some(Arc::clone(domain)), domain_key.clone());
+                }
             }
         }
-        None
+        (None, "".to_string())
     }
 
     fn list_registered_domains(&self) -> Vec<String> {

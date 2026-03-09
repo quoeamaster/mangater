@@ -3,7 +3,7 @@ plain-text content:
    Database class for storage and retrieval of modeled data 
  "Structured storage" redirects here. For the Microsoft technology, see COM Structured Storage. 
  
-  NoSQL (originally meaning "Not only SQL" or "non-relational")[1] refers to a type of database design that stores and retrieves data differently from the traditional table-based structure of relational databases. Unlike relational databases, which organize data into rows and columns like a spreadsheet, NoSQL databases use a single data structure—such as key–value pairs, wide columnsgraphs, or documents—to hold information. Since this non-relational design does not require a fixed schema, it ales easily to manage large, often unstructured datasets.[2] NoSQL systems are sometimes called "Not only SQL" because they can support SQL-like query languages or work alongside SQL databases in polyglot-persistent setups, where multiple database types are combined.[3][4] Non-relational databases date back to the late 1960s, but the term "NoSQL" emerged in the early 2000s, spurred by the needs of Web 2.0 companies like social media platforms.[5][6]
+  NoSQL (originally meaning "Not only SQL" or "non-relational")[1] refers to a type of database design that stores and retrieves data differently from the traditional table-based structure of relational databases. Unlike relational databases, which organize data into rows and columns like a spreadsheet, NoSQL databases use a single data structure—such as key–value pairs, wide columns, graphs, or documents—to hold information. Since this non-relational design does not require a fixed schema, it scales easily to manage large, often unstructured datasets.[2] NoSQL systems are sometimes called "Not only SQL" because they can support SQL-like query languages or work alongside SQL databases in polyglot-persistent setups, where multiple database types are combined.[3][4] Non-relational databases date back to the late 1960s, but the term "NoSQL" emerged in the early 2000s, spurred by the needs of Web 2.0 companies like social media platforms.[5][6]
   NoSQL databases are popular in big data and real-time web applications due to their simple design, ability to scale across clusters of machines (called horizontal scaling), and precise control over data availability.[7][8] These structures can speed up certain tasks and are often considered more adaptable than fixed database tables.[9] However, many NoSQL systems prioritize speed and availability over strict consistency (per the CAP theorem), using eventual consistency—where updates reach all nodes eventually, typically within milliseconds, but may cause brief delays in accessing the latest data, known as stale reads.[10] While most lack full ACID transaction support, some, like MongoDB, include it as a key feature.[11]
  
 
@@ -35,10 +35,10 @@ Azure Cosmos DB, ArangoDB, Amazon DynamoDB, Aerospike, Couchbase, ScyllaDB
 
 Key–value store (eventually consistent)
 Azure Cosmos DB, Oracle NoSQL Database, Riak, Voldemort
-td>
+
 
 Key–value store (ordered)
-FoundationDB, InfinityDB, LMDB, McacheDB
+FoundationDB, InfinityDB, LMDB, MemcacheDB
 
 
 Tuple store
@@ -77,8 +77,8 @@ D3 Pick database, Extensible Storage Engine (ESE/NT), InfinityDB, InterSystems C
 
   Key–value store [edit] 
  Main article: Key–value database 
- Key–value (KV) stores use the associative array (also called a map or dictionary) as their fundamental data model. In this model, data is represented as a collection of key–value pairs, such that each possible key appears at most once in thtion.[24][25]
-  The key–value model is one of the simplest non-trivial data models, and richer data models are often implemented as an extension of it. The key–value model can be extended to a discretely ordered model that maintains keyslexicographic order. This extension is computationally powerful, in that it can efficiently retrieve selective key ranges.[26]
+ Key–value (KV) stores use the associative array (also called a map or dictionary) as their fundamental data model. In this model, data is represented as a collection of key–value pairs, such that each possible key appears at most once in the collection.[24][25]
+  The key–value model is one of the simplest non-trivial data models, and richer data models are often implemented as an extension of it. The key–value model can be extended to a discretely ordered model that maintains keys in lexicographic order. This extension is computationally powerful, in that it can efficiently retrieve selective key ranges.[26]
   Key–value stores can use consistency models ranging from eventual consistency to serializability. Some databases support ordering of keys. There are various hardware implementations, and some users store data in memory (RAM), while others on solid-state drives (SSD) or rotating disks (aka hard disk drive (HDD)).
  
   Document store [edit] 
@@ -230,7 +230,7 @@ high
 high
 high
 none
-l
+low
 variable (none)
 
 
@@ -367,7 +367,7 @@ Yes[nb 3]
  
   
   Query optimization and indexing in NoSQL databases [edit] 
- Different NoSQL databases, such as DynamoDB, MongoDB, Cassandra, Couchbase, HBase, and Redis, exhibit varying behaviors when querying non-indexed fields. Many perform full-table or collection scans for such queries, applying filtering operations after retrieving data. However, modern NoSQL databases often incorporate advanced features to optimize query performance. For example, MongoDB supports compound indexes and query-optimization strategies, Cassandra offers secondary indexes and materialized views, and Redis employs custom indexing mechanisms tailored to specific use cases. Systems like Elasticsearch use inverted indexes for efficient text-based searches, but they can still require full scans for non-indexed fields. This behavior reflects the design focus of many NoSQL systems on scalability and efficient key-based operations rather than optimized querying for arbitrary fields. Consequently, while these databases excel at basic CRUD operations and key-based lookups, their suitability for complex queries involving joins or non-indexed filtering varies depending on the database type—document, key–value, wide-column graph—and the specific implementation.[33]
+ Different NoSQL databases, such as DynamoDB, MongoDB, Cassandra, Couchbase, HBase, and Redis, exhibit varying behaviors when querying non-indexed fields. Many perform full-table or collection scans for such queries, applying filtering operations after retrieving data. However, modern NoSQL databases often incorporate advanced features to optimize query performance. For example, MongoDB supports compound indexes and query-optimization strategies, Cassandra offers secondary indexes and materialized views, and Redis employs custom indexing mechanisms tailored to specific use cases. Systems like Elasticsearch use inverted indexes for efficient text-based searches, but they can still require full scans for non-indexed fields. This behavior reflects the design focus of many NoSQL systems on scalability and efficient key-based operations rather than optimized querying for arbitrary fields. Consequently, while these databases excel at basic CRUD operations and key-based lookups, their suitability for complex queries involving joins or non-indexed filtering varies depending on the database type—document, key–value, wide-column, or graph—and the specific implementation.[33]
  
   See also [edit] 
  CAP theorem 
@@ -400,7 +400,7 @@ Yes[nb 3]
  
  ^ "RDBMS dominate the database market, but NoSQL systems are catching up". DB-Engines.com. 21 November 2013. Archived from the original on 24 November 2013. Retrieved 24 November 2013.
  
- ^ Vogels, Werner (18 January 2012). "Amazon DynamoDB – a Fast and Scalable NoSQL Database Service signed for Internet Scale Applications". All Things Distributed. Retrieved 6 March 2017.
+ ^ Vogels, Werner (18 January 2012). "Amazon DynamoDB – a Fast and Scalable NoSQL Database Service Designed for Internet Scale Applications". All Things Distributed. Retrieved 6 March 2017.
  
  ^ "Jepsen: MongoDB stale reads". Aphyr.com. 20 April 2015. Retrieved 6 March 2017.
  
@@ -428,11 +428,11 @@ Yes[nb 3]
  
  ^ https://apacheignite.readme.io/docs Ignite Documentation
  
- ^span> https://www.infoworld.com/article/3135070/data-center/fire-up-big-data-processing-with-apache-ignite.html fire-up-big-data-processing-with-apache-ignite
+ ^ https://www.infoworld.com/article/3135070/data-center/fire-up-big-data-processing-with-apache-ignite.html fire-up-big-data-processing-with-apache-ignite
  
- ^ Sandy (14 January 2011). "Key Value stores and the NoSQL movement". Stackexchange. Retrieved 1 January 2012. Key–value stores allow the application developer to store schema-less data. This data usually consists of a string that represents the key, and the actual da that is considered the value in the "key–value" relationship. The data itself is usually some kind of primitive of the programming language (a string, an integer, or an array) or an object that is being marshaled by the programming language's bindings to the key-value store. This structure replaces the need for a fixed data model and allows proper formatting.
+ ^ Sandy (14 January 2011). "Key Value stores and the NoSQL movement". Stackexchange. Retrieved 1 January 2012. Key–value stores allow the application developer to store schema-less data. This data usually consists of a string that represents the key, and the actual data that is considered the value in the "key–value" relationship. The data itself is usually some kind of primitive of the programming language (a string, an integer, or an array) or an object that is being marshaled by the programming language's bindings to the key-value store. This structure replaces the need for a fixed data model and allows proper formatting.
  
- ^ Seeger, Marc (21 September 2009). "Key-Value Stores: a practical overview" (PDF). Marc Seeger. Retrieved 1 January 2012. Key–value stores provide a high-performance alternative to relational database systems with respect to storing and accessing data. This paper provides a sht overview of some of the currently available key–value stores and their interface to the Ruby programming language.
+ ^ Seeger, Marc (21 September 2009). "Key-Value Stores: a practical overview" (PDF). Marc Seeger. Retrieved 1 January 2012. Key–value stores provide a high-performance alternative to relational database systems with respect to storing and accessing data. This paper provides a short overview of some of the currently available key–value stores and their interface to the Ruby programming language.
  
  ^ Katsov, Ilya (1 March 2012). "NoSQL Data Modeling Techniques". Ilya Katsov. Retrieved 8 May 2014.
  
@@ -447,7 +447,7 @@ Yes[nb 3]
  
  ^ "Sharded Collection Restrictions". docs.mongodb.com. Retrieved 24 January 2020.
  
- ^ "SQL Reference · OrientDB Manual".OrientDB.com. Retrieved 24 January 2020.
+ ^ "SQL Reference · OrientDB Manual". OrientDB.com. Retrieved 24 January 2020.
  
  ^ Sullivan, Dan. NoSQL for Mere Mortals. ISBN 978-0134023212.
  
@@ -538,7 +538,7 @@ Yes[nb 3]
  Relational algebra 
  Relational calculus 
  Relational model 
- Object–relational datab/a> 
+ Object–relational database 
  Transaction processing 
  List of SQL software and tools 
   
@@ -550,7 +550,7 @@ Yes[nb 3]
 
 
  <img src="https://en.wikipedia.org/wiki/Special:CentralAutoLogin/start?useformat=desktop&amp;type=1x1&amp;usesul3=1" alt="" width="1" height="1" style="border: none; position: absolute;">
- Retrieved from "https://en.wikipedia.org/w/index.php?title=NoSQL&oldid=1335450843" 
+ Retrieved from "https://en.wikipedia.org/w/index.php?title=NoSQL&oldid=1340550740" 
 
 Images:
 src: /static/images/icons/enwiki-25.svg

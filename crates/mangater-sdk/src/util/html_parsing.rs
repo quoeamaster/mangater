@@ -79,9 +79,14 @@ fn parse_images_through_html(document: &Html) -> Vec<HtmlImage> {
     html_images
 }
 
-pub fn parse_plain_text_and_images(content: String) -> HtmlPlainTextAndImages {
+pub fn parse_plain_text_and_images(
+    content: String,
+    selector_in_string: Option<String>,
+) -> HtmlPlainTextAndImages {
     let document = Html::parse_document(&content);
-    let selector = Selector::parse("#mw-content-text").unwrap();
+    let selector_in_string_final = selector_in_string.unwrap_or("#mw-content-text".to_string());
+
+    let selector = Selector::parse(&selector_in_string_final).unwrap();
     let content = document.select(&selector).next().unwrap();
 
     let text = clean_text(&content);
@@ -185,7 +190,8 @@ mod tests {
     #[tokio::test]
     async fn test_parse_plain_text_and_images() -> Result<(), Box<dyn std::error::Error>> {
         let content = fs::read_to_string("testdata/wikipedia_nosql_local.html.txt").unwrap();
-        let plain_text_and_images = parse_plain_text_and_images(content);
+        let plain_text_and_images =
+            parse_plain_text_and_images(content, Some("#mw-content-text".to_string()));
 
         assert!(!plain_text_and_images.text.is_empty());
         assert!(!plain_text_and_images.images.is_empty());

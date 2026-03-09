@@ -49,6 +49,9 @@ pub struct PatternAndType {
     pub pattern: String,
     /// The type of the pattern, specifying whether it is intended for a resource or pagination.
     pub pattern_type: PatternType,
+    // [obsolete]
+    // An extra selector to be used for the pattern matching.
+    //pub extra_selector: Option<String>,
 }
 
 /// Represents the type of pattern matched on a web page.
@@ -135,10 +138,20 @@ pub struct AppConfigJson5 {
 pub struct CoreConfig {
     #[serde(default)]
     pub proxy: Option<ProxyConfig>,
+
+    pub storage: StorageConfig,
+
+    pub max_concurrency: u32,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ProxyConfig {
     pub username: Option<String>,
     pub password: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StorageConfig {
+    #[serde(default)]
+    pub root_folder: String,
 }

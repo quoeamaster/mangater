@@ -29,5 +29,5 @@ mod model;
 
 pub use model::{
     AppConfigJson5, CoreConfig, HtmlImage, HtmlPlainTextAndImages, PatternAndType,
-    PatternMatchResult, PatternType, ProxyConfig, Registerable,
+    PatternMatchResult, PatternType, ProxyConfig, Registerable, StorageConfig,
 };

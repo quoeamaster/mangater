@@ -926,6 +926,8 @@ dependencies = [
  "async-trait",
  "bytes",
  "dotenvy",
+ "futures",
+ "futures-util",
  "json5",
  "mangater-sdk",
  "reqwest",

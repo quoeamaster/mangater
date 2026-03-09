@@ -4,7 +4,11 @@
         "proxy": {
             // "username": "",
             // "password": ""
-        }
+        },
+        "storage": {
+            "root_folder": "/dev/null"
+        },
+        "max_concurrency": 8
     },
     // **** [plugin specific config] ****
     "plugins": {

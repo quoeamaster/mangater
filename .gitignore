@@ -30,3 +30,6 @@ report.features
 # all DS_Store
 **/.DS_Store
 
+# local testing config file
+**/config-local.json5
+
