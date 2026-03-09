@@ -194,11 +194,14 @@ impl Engine {
                     }
                 }
             }).buffer_unordered(self.get_max_concurrency()).collect::<Vec<_>>().await;
-            
-            if let Some(Err(e)) = results.into_iter().find(Result::is_err) {
-                tracing::error!("error scrapping and persisting the resources: {}", e.to_string());
-                return Err(e);
-            }
+
+        if let Some(Err(e)) = results.into_iter().find(Result::is_err) {
+            tracing::error!(
+                "error scrapping and persisting the resources: {}",
+                e.to_string()
+            );
+            return Err(e);
+        }
 
         Ok(())
     }
