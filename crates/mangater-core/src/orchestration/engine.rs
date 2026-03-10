@@ -84,7 +84,7 @@ impl Engine {
 
 impl Engine {
     pub async fn run_scrap_workflow(&self, url: String) -> Result<(), SdkError> {
-        let (domain, domain_key) = self.registry.resolve_domain(url.as_str());
+        let (domain, _domain_key) = self.registry.resolve_domain(url.as_str());
         // actually if no Domain found, not supported and throw an error
         if domain.is_none() {
             return Err(SdkError::Unsupported(url.to_string()));
