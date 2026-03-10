@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use crate::errors::SdkError;
 use futures_util::StreamExt;
 use tokio::fs::File;
@@ -43,12 +45,26 @@ pub async fn download_resource_to_file(
         .map_err(|e| SdkError::Network(e.to_string()))?;
 
     let response = client
-        .get(uri)
+        .get(uri.clone())
         .send()
         .await
         .map_err(|e| SdkError::Network(e.to_string()))?
         .error_for_status()
         .map_err(|e| SdkError::Network(e.to_string()))?;
+
+    tracing::debug!(
+        "downloading resource to file: {}, source is {}",
+        file_path,
+        uri
+    );
+
+    // create missing folder(s) if needed...
+    let local_file_path = file_path.clone();
+    let file_path = std::path::Path::new(&local_file_path);
+    if let Some(parent) = file_path.parent() {
+        std::fs::create_dir_all(parent).unwrap();
+    }
+    tracing::debug!("folder(s) created: {}", file_path.display());
 
     let mut file = File::create(file_path).await?;
     let mut stream = response.bytes_stream();

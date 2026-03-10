@@ -116,11 +116,13 @@ pub struct Registerable {
 }
 // Box<dyn Domain>
 
+#[derive(Debug, Clone)]
 pub struct HtmlImage {
     pub src: String,
     pub inner_html: String,
 }
 
+#[derive(Debug, Clone)]
 pub struct HtmlPlainTextAndImages {
     pub text: String,
     pub images: Vec<HtmlImage>,

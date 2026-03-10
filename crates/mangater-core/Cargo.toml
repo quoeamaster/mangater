@@ -27,6 +27,8 @@ tracing = "0.1.44"
 futures = "0.3.32"
 futures-util = "0.3.32"
 
+[dev-dependencies]
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "fmt"] }
 
 [features]
 default = []

@@ -33,3 +33,5 @@ report.features
 # local testing config file
 **/config-local.json5
 
+# unit test related
+**/testdata/scrap_and_persist_results/*

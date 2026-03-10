@@ -126,7 +126,7 @@ impl Engine {
         let url_param = Arc::new(url.clone());
         let domain_key_arc = Arc::new(domain_key.clone());
 
-        let results = stream::iter(patterns)
+        let results: Vec<Result<(), SdkError>> = stream::iter(patterns)
             .map(|pattern| {
                 let url_content_closure = url_content.clone();
                 let url_param_closure = url_param.clone();
@@ -150,59 +150,249 @@ impl Engine {
                             tracing::warn!("others pattern is not supported yet");
                             return Ok(());
                         }
+                        // [TODO] extract out for unit test and maintenance concerncs
                         PatternType::Resource => {
-                            match pattern.pattern.as_str() {
-                                // at this moment only support image resources ('img' tag)
-                                "img" => {
-                                    let images = parse_images(url_content_closure.to_string());
+                            let root_folder = self
+                                .config
+                                .as_ref()
+                                .unwrap()
+                                .core
+                                .storage
+                                .root_folder
+                                .clone();
 
-                                    for image in images {
-                                        let image_bytes = download_resource(image.src.clone(), None)
-                                            .await
-                                            .map_err(|e| SdkError::NotFound(e.to_string()))?;
+                            // calling the helper function
+                            scrap_and_persist_resource(
+                                root_folder,
+                                pattern.pattern.as_str(),
+                                &url_content_closure,
+                                &url_param_closure,
+                                domain_key_closure.to_string(),
+                                &pattern,
+                                &registry,
+                            )
+                            .await?;
 
-                                        match registry.storage.as_ref() {
-                                            Some(storage) => {
-                                                let response = storage.persist(pattern, image_bytes).await;
-                                                if let Err(e) = response {
-                                                    tracing::error!("error persisting the resource: {}", e.to_string());
-                                                    return Err(e);
-                                                }
-                                                return Ok(());
-                                            }
-                                            None => {
-                                                tracing::info!("utilizing default storage policy to persist the resource: xxx.jpeg");
-                                                let root_folder = self.config.as_ref().unwrap().core.storage.root_folder.clone();
-                                                let file_path = generate_file_path_to_persist(root_folder, &image.src, None);
-
-                                                // [todo] check if the image.src is correct...
-                                                let image_src_url = generate_url_for_fetching(&url_param_closure.to_string(), &image.src.clone());
-                                                download_resource_to_file(image_src_url, None, file_path).await?;
-
-                                                return Ok(());
-                                            }
-                                        }
-                                    }
-                                    return Ok(());
-                                }
-                                _ => {
-                                    tracing::warn!("{}:{} - resource pattern {:?} is not supported yet", domain_key_closure, url_param_closure.to_string(), pattern.pattern);
-                                    return Ok(());
-                                }
-                            }
+                            return Ok(());
                         }
                     }
                 }
-            }).buffer_unordered(self.get_max_concurrency()).collect::<Vec<_>>().await;
+            })
+            .buffer_unordered(self.get_max_concurrency())
+            .collect::<Vec<_>>()
+            .await;
 
         if let Some(Err(e)) = results.into_iter().find(Result::is_err) {
             tracing::error!(
-                "error scrapping and persisting the resources: {}",
+                "error scrapping and persisting the resources (please note that it could be partial success as well): {}",
                 e.to_string()
             );
             return Err(e);
         }
 
         Ok(())
+    }
+}
+
+async fn scrap_and_persist_resource(
+    root_folder: String,
+    resource_type: &str,
+    url_content: &str,
+    url: &str,
+    domain_key: String,
+    pattern: &PatternMatchResult,
+    registry: &Registerable,
+) -> Result<(), SdkError> {
+    match resource_type {
+        // at this moment only support image resources ('img' tag)
+        "img" => {
+            let images = parse_images(url_content.to_string());
+            tracing::debug!(
+                "images parsed from url-content: {:?}, length: {}",
+                images,
+                images.len()
+            );
+
+            for image in images {
+                // url rewrite...
+                let image_src_url = generate_url_for_fetching(url, &image.src.clone());
+                tracing::debug!("image_src_url to be fetched: {}", image_src_url);
+
+                let image_bytes = download_resource(image_src_url.clone(), None)
+                    .await
+                    .map_err(|e| SdkError::NotFound(e.to_string()));
+
+                if let Err(e) = image_bytes {
+                    // could not download might not be an issue...
+                    tracing::warn!("error downloading the image: {}", e.to_string());
+                    //return Err(e);
+                    continue;
+                }
+                let image_bytes = image_bytes.unwrap();
+                tracing::debug!(
+                    "image_bytes downloaded: valid ? size: {}",
+                    image_bytes.len()
+                );
+
+                match registry.storage.as_ref() {
+                    Some(storage) => {
+                        let response = storage.persist(pattern, image_bytes).await;
+                        if let Err(e) = response {
+                            tracing::error!("error persisting the resource: {}", e.to_string());
+                            return Err(e);
+                        }
+                        //return Ok(());
+                    }
+                    None => {
+                        tracing::debug!(
+                            "utilizing default storage policy to persist the resource..."
+                        );
+                        let file_path = generate_file_path_to_persist(
+                            root_folder.clone(),
+                            &image_src_url.clone().as_str(),
+                            None,
+                        );
+                        tracing::debug!("** file_path to persist the image: {}", file_path);
+
+                        download_resource_to_file(image_src_url.clone(), None, file_path).await?;
+                        //return Ok(());
+                    }
+                }
+            }
+            return Ok(());
+        }
+        _ => {
+            tracing::warn!(
+                "{}:{} - resource pattern {:?} is not supported yet",
+                domain_key,
+                url.to_string(),
+                pattern.pattern
+            );
+            return Ok(());
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tracing_subscriber::EnvFilter;
+    
+    /// Initializes the tracing subscriber for logging with environment filter settings.
+    ///
+    /// This function sets up a default logger for tests, configuring it to:
+    /// - Use the `"info"` log level (can be customized with the `RUST_LOG` env variable).
+    /// - Disable logging of targets.
+    /// - Enable logging of source file names and line numbers.
+    ///
+    /// # Usage
+    /// Call once at the start of a test or main function to ensure proper logging.
+    ///
+    fn init_tracing() {
+        let filter = EnvFilter::new("info");
+
+        let _ = tracing_subscriber::fmt()
+            .with_env_filter(filter)
+            .with_target(false)
+            .with_file(true)
+            .with_line_number(true)
+            .try_init();
+    }
+
+    #[tokio::test]
+    async fn test_scrap_and_persist_resource() {
+        init_tracing();
+
+        struct DummyMatcher {}
+        impl mangater_sdk::traits::Matcher for DummyMatcher {
+            fn match_patterns(&self) -> Vec<PatternMatchResult> {
+                vec![PatternMatchResult {
+                    pattern: "img".to_string(),
+                    pattern_type: PatternType::Resource,
+                    resource_string: None,
+                }]
+            }
+        }
+
+        let root_folder = "./testdata/scrap_and_persist_results".to_string();
+        let resource_type = "img".to_string();
+        // load the content into url_content variable...
+        let local_content_src =
+            "testdata/scrap_and_persist_results/relational_db.local.html.txt".to_string();
+        let url = "https://en.wikipedia.org/wiki/Relational_database".to_string();
+        let domain_key = "wikipedia-unit-testing".to_string();
+        let pattern = PatternMatchResult {
+            pattern: "img".to_string(),
+            pattern_type: PatternType::Resource,
+            resource_string: None,
+        };
+        let registry = Registerable {
+            configurator: None,
+            matcher: Arc::new(DummyMatcher {}),
+            storage: None,
+        };
+
+        // read content for local file...
+        let url_content = fs::read_to_string(local_content_src).unwrap();
+        tracing::debug!("** 1. url_content: valid ? {}", url_content.len() > 100);
+
+        let result = scrap_and_persist_resource(
+            root_folder.clone(),
+            &resource_type,
+            &url_content,
+            &url,
+            domain_key,
+            &pattern,
+            &registry,
+        )
+        .await;
+
+        // overall is ok
+        // if let Err(e) = result {
+        //     tracing::error!(
+        //         "** 2. failed after calling scrap_and_persist_resource: {}",
+        //         e.to_string()
+        //     );
+        //     return;
+        // }
+        assert!(result.is_ok());
+
+        // check the file(s)... (at least 1 image should be present)
+        let files =
+            fs::read_dir(format!("{}/en.wikipedia.org/icons", root_folder).as_str()).unwrap();
+        let mut img_files_cnt = 0;
+
+        for file in files {
+            let file = file.unwrap();
+            let file_ext = file
+                .path()
+                .extension()
+                .unwrap_or_default()
+                .to_str()
+                .unwrap()
+                .to_string();
+            tracing::debug!(
+                "file and extension: {} - {}",
+                file.path().display(),
+                file_ext
+            );
+
+            match file_ext.as_str() {
+                "jpeg" | "jpg" | "png" | "gif" | "bmp" | "svg" | "tiff" | "ico" | "webp" => {
+                    tracing::info!(
+                        "image file found: {} - size: {}",
+                        file.path().display(),
+                        file.metadata().unwrap().len()
+                    );
+                    img_files_cnt += 1;
+                }
+                _ => (),
+            }
+        }
+        assert!(
+            img_files_cnt > 0,
+            "at least 1 image should be present, actual count: {}",
+            img_files_cnt
+        );
     }
 }

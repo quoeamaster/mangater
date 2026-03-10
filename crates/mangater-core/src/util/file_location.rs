@@ -33,6 +33,8 @@ pub fn generate_file_path_to_persist(
 ) -> String {
     // {config.core.storage.root_folder}/{last-part-of-url}/[chapter]/{source_filename}
 
+    tracing::debug!("generating file path to persist for url: {}", url);
+
     let url_parts = Url::parse(url).ok().unwrap();
     let domain_key = url_parts.domain().unwrap().to_string();
 
@@ -120,9 +122,18 @@ pub fn generate_file_path_to_persist(
 /// assert_eq!(relative, "https://example.com/img/cover.jpg");
 /// ```
 pub fn generate_url_for_fetching(resource_url: &str, resource_src: &str) -> String {
+    tracing::debug!(
+        "resource_url: {}, resource_src: {}",
+        resource_url,
+        resource_src
+    );
+
     // If resource_src is already a full URL, return it directly.
     if resource_src.starts_with("https://") || resource_src.starts_with("http://") {
         return resource_src.to_string();
+    } else if resource_src.starts_with("//") {
+        // assume https://
+        return format!("https://{}", resource_src);
     } else {
         // Otherwise, build an absolute URL using resource_url's scheme and domain.
         let url_parts = Url::parse(resource_url).ok().unwrap();
