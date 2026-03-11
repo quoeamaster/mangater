@@ -1,6 +1,6 @@
 use mangater_sdk::entity::PatternType;
 use mangater_sdk::entity::{PatternMatchResult, Registerable};
-use mangater_sdk::traits::{Config, Domain, Matcher};
+use mangater_sdk::traits::{Config, Domain, Matcher, UrlFilter, UrlRewriter};
 use mangater_sdk::SdkError;
 
 use regex::Regex;
@@ -60,6 +60,8 @@ impl Domain for WikipediaInstance {
             configurator: None,
             matcher: Arc::new(self.clone()), // matcher: Arc::new(WikipediaInstance), (if stateless, no need to clone)
             storage: None,
+            url_filter: Some(Arc::new(self.clone())),
+            url_rewriter: Some(Arc::new(self.clone())),
         }
     }
 }
@@ -104,6 +106,41 @@ impl Config for WikipediaInstance {
         }
         tracing::debug!("wikipedia config: {:?}", self.config);
         Ok(())
+    }
+}
+
+impl UrlFilter for WikipediaInstance {
+    /// Filters URLs to determine if they belong to Wikimedia's upload servers.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to be checked as a string slice.
+    ///
+    /// # Returns
+    ///
+    /// Returns `true` if the URL contains "upload.wikimedia.org", otherwise `false`.
+    fn filter_url(&self, url: &str) -> bool {
+        url.contains("upload.wikimedia.org")
+    }
+}
+
+impl UrlRewriter for WikipediaInstance {
+    fn rewrite_url(&self, url: &str) -> String {
+        let parts: Vec<&str> = url.split("/thumb/").collect();
+        if parts.len() != 2 {
+            return url.to_string();
+        }
+        let base = parts[0];
+        let segments: Vec<&str> = parts[1].split('/').collect();
+        if segments.len() < 4 {
+            return url.to_string();
+        }
+
+        let hash1 = segments[0];
+        let hash2 = segments[1];
+        let filename = segments[2];
+
+        format!("{}/{}/{}/{}", base, hash1, hash2, filename)
     }
 }
 

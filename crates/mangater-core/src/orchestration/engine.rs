@@ -95,6 +95,8 @@ impl Engine {
 
             // next...
             // check the patterns and check if need to scrap OR the content already ready for storage...
+
+            // [todo] add scrap_and_persist logic here...
         }
         Ok(())
     }
@@ -277,7 +279,7 @@ async fn scrap_and_persist_resource(
 mod tests {
     use super::*;
     use tracing_subscriber::EnvFilter;
-    
+
     /// Initializes the tracing subscriber for logging with environment filter settings.
     ///
     /// This function sets up a default logger for tests, configuring it to:
@@ -330,6 +332,8 @@ mod tests {
             configurator: None,
             matcher: Arc::new(DummyMatcher {}),
             storage: None,
+            url_filter: None,
+            url_rewriter: None,
         };
 
         // read content for local file...

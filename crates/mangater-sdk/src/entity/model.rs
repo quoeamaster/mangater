@@ -31,7 +31,7 @@
 //! *See also:* Matcher trait definition in [`../traits/matcher.rs`]
 //!
 
-use crate::traits::{Config, Matcher, Storage};
+use crate::traits::{Config, Matcher, Storage, UrlFilter, UrlRewriter};
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -79,32 +79,6 @@ pub struct PatternMatchResult {
     pub resource_string: Option<String>,
 }
 
-/// Aggregates components required for registration within the Mangater SDK.
-///
-/// The `Registerable` struct acts as a container for the entities involved in the
-/// configuration, matching, and storage functionalities. It is typically intended
-/// for dynamic type usage, as each field is boxed and implements the respective
-/// trait.
-///
-/// This is the heart of the SDK, as it combines everything required for a domain to work out.
-/// - the configurator defines how config file(s) should be loaded
-/// - the matcher defines how the content should be matched (resource level, navigation level etc)
-/// - the storage defines how the content should be persisted (file, blob storage etc)
-///
-/// # Fields
-///
-/// - `configurator`: A boxed dynamic trait object implementing [`Config`] for configuration functionality.
-/// - `matcher`: A boxed dynamic trait object implementing [`Matcher`] for pattern matching.
-/// - `storage`: A boxed dynamic trait object implementing [`Storage`] for data persistence.
-///
-/// # Example
-/// ```ignore
-/// let reg = Registerable {
-///     configurator: Box::new(MyConfigurator {}),
-///     matcher: Box::new(MyMatcher {}),
-///     storage: Box::new(MyStorage {}),
-/// };
-/// ```
 pub struct Registerable {
     /// Used to configure the domain/entity.
     /// Only if having custom implementations rather than env var OR config file(s).
@@ -113,6 +87,10 @@ pub struct Registerable {
     pub matcher: Arc<dyn Matcher + Send + Sync>,
     /// Used for persisting or caching results.
     pub storage: Option<Arc<dyn Storage + Send + Sync>>,
+    /// Filters URLs relevant to the domain (optional).
+    pub url_filter: Option<Arc<dyn UrlFilter + Send + Sync>>,
+    /// Rewrites URLs to their canonical/resource form (optional).
+    pub url_rewriter: Option<Arc<dyn UrlRewriter + Send + Sync>>,
 }
 // Box<dyn Domain>
 

@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use crate::errors::SdkError;
 use futures_util::StreamExt;
 use tokio::fs::File;

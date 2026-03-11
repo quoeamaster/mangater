@@ -30,9 +30,13 @@ mod domain;
 mod matcher;
 mod registry;
 mod storage;
+mod url_filter;
+mod url_rewriter;
 
 pub use config::Config;
 pub use domain::Domain;
 pub use matcher::Matcher;
 pub use registry::Registry;
 pub use storage::Storage;
+pub use url_filter::UrlFilter;
+pub use url_rewriter::UrlRewriter;
