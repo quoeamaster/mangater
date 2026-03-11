@@ -12,7 +12,7 @@ pub fn clean_html_content(content: &str, selector_in_string: Option<String>) -> 
     let content = document.select(&selector).next().unwrap();
     tracing::debug!("** selector: {}", selector_in_string_final);
 
-    let final_text =clean_text(&content);
+    let final_text = clean_text(&content);
     tracing::trace!("** html full content after cleaning: {}", final_text);
 
     final_text

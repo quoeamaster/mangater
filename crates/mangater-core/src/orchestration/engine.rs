@@ -85,7 +85,7 @@ impl Engine {
 
 impl Engine {
     pub async fn run_scrap_workflow(&self, url: String) -> Result<(), SdkError> {
-        let (domain, _domain_key) = self.registry.resolve_domain(url.as_str());
+        let (domain, domain_key) = self.registry.resolve_domain(url.as_str());
         // actually if no Domain found, not supported and throw an error
         if domain.is_none() {
             return Err(SdkError::Unsupported(url.to_string()));
@@ -94,10 +94,14 @@ impl Engine {
             let patterns = domain.get_domain_registerable().matcher.match_patterns();
             tracing::info!("patterns: {:?}", patterns);
 
-            // next...
             // check the patterns and check if need to scrap OR the content already ready for storage...
-
-            // [todo] add scrap_and_persist logic here...
+            self.scrap_and_persist(
+                url,
+                domain_key,
+                &patterns,
+                &domain.get_domain_registerable(),
+            )
+            .await?;
         }
         Ok(())
     }
@@ -238,6 +242,24 @@ async fn scrap_and_persist_content(
     Ok(())
 }
 
+/// Scrapes resources from the provided HTML content based on the specified resource type and persists them.
+///
+/// This function currently supports scraping image resources by parsing image URLs from the input content,
+/// optionally __filtering__ and __rewriting__ them according to the provided `registry` configuration. It attempts to
+/// download each resource and then persists it using either the `registry`'s storage implementation or a default
+/// storage policy.
+///
+/// # Arguments
+/// * `root_folder` - The root directory where resources should be stored if no custom storage is specified.
+/// * `resource_type` - The type of resource to scrape (currently only "img" is supported).
+/// * `url_content` - The HTML content from which resources will be scraped.
+/// * `url` - The base URL used for resolving relative resource URLs.
+/// * `domain_key` - An identifier for the current domain, used in logging and warnings.
+/// * `pattern` - The matched pattern specifying how resources are identified.
+/// * `registry` - A reference to a registry that may contain storage, URL filtering, and URL rewriting implementations.
+///
+/// # Returns
+/// Returns `Ok(())` on success, or an `SdkError` if resource downloading or persistence fails.
 async fn scrap_and_persist_resource(
     root_folder: String,
     resource_type: &str,
@@ -248,15 +270,12 @@ async fn scrap_and_persist_resource(
     registry: &Registerable,
 ) -> Result<(), SdkError> {
     match resource_type {
-        // at this moment only support image resources ('img' tag)
         "img" => {
             let mut images = parse_images(url_content.to_string());
             if let Some(url_filter) = registry.url_filter.as_ref() {
-                // filtering if available...
                 images.retain(|html_image| url_filter.filter_url(&html_image.src.clone()));
             }
             if let Some(url_rewriter) = registry.url_rewriter.as_ref() {
-                // rewriting if available...
                 images.iter_mut().for_each(|html_image| {
                     html_image.src = url_rewriter.rewrite_url(&html_image.src.clone());
                 });
@@ -268,7 +287,6 @@ async fn scrap_and_persist_resource(
             );
 
             for image in images {
-                // url rewrite...
                 let image_src_url = generate_url_for_fetching(url, &image.src.clone());
                 tracing::debug!("image_src_url to be fetched: {}", image_src_url);
 
@@ -277,9 +295,7 @@ async fn scrap_and_persist_resource(
                     .map_err(|e| SdkError::NotFound(e.to_string()));
 
                 if let Err(e) = image_bytes {
-                    // could not download might not be an issue...
                     tracing::warn!("error downloading the image: {}", e.to_string());
-                    //return Err(e);
                     continue;
                 }
                 let image_bytes = image_bytes.unwrap();
@@ -295,7 +311,6 @@ async fn scrap_and_persist_resource(
                             tracing::error!("error persisting the resource: {}", e.to_string());
                             return Err(e);
                         }
-                        //return Ok(());
                     }
                     None => {
                         tracing::debug!(
@@ -309,11 +324,10 @@ async fn scrap_and_persist_resource(
                         tracing::debug!("** file_path to persist the image: {}", file_path);
 
                         download_resource_to_file(image_src_url.clone(), None, file_path).await?;
-                        //return Ok(());
                     }
                 }
             }
-            return Ok(());
+            Ok(())
         }
         _ => {
             tracing::warn!(
@@ -322,7 +336,7 @@ async fn scrap_and_persist_resource(
                 url.to_string(),
                 pattern.pattern
             );
-            return Ok(());
+            Ok(())
         }
     }
 }
