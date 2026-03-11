@@ -2,6 +2,22 @@ use scraper::{node::Node, ElementRef, Html, Selector};
 
 use crate::entity::{HtmlImage, HtmlPlainTextAndImages};
 
+pub fn clean_html_content(content: &str, selector_in_string: Option<String>) -> String {
+    tracing::trace!("** html full content before cleaning: {}", content);
+
+    let document = Html::parse_document(&content);
+    let selector_in_string_final = selector_in_string.unwrap_or("#mw-content-text".to_string());
+
+    let selector = Selector::parse(&selector_in_string_final).unwrap();
+    let content = document.select(&selector).next().unwrap();
+    tracing::debug!("** selector: {}", selector_in_string_final);
+
+    let final_text =clean_text(&content);
+    tracing::trace!("** html full content after cleaning: {}", final_text);
+
+    final_text
+}
+
 fn clean_text(element: &ElementRef) -> String {
     let mut text = String::new();
 

@@ -119,12 +119,38 @@ impl UrlFilter for WikipediaInstance {
     /// # Returns
     ///
     /// Returns `true` if the URL contains "upload.wikimedia.org", otherwise `false`.
+    ///
+    /// example:
+    /// ```
+    /// use mangater_sdk::traits::UrlFilter;
+    /// use site_wikipedia::WikipediaInstance;
+    ///
+    /// let instance = WikipediaInstance::new();
+    /// assert!(instance.filter_url("https://upload.wikimedia.org/wiki/Rust_(programming_language)/lang.png"));
+    /// assert!(!instance.filter_url("https://en.wikipedia.org/wiki/Rust_(programming_language)"));
+    /// ```
     fn filter_url(&self, url: &str) -> bool {
         url.contains("upload.wikimedia.org")
     }
 }
 
 impl UrlRewriter for WikipediaInstance {
+    /// Rewrites URLs to their canonical/resource form.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to be rewritten as a string slice.
+    ///
+    /// # Returns
+    /// example:
+    /// ```
+    /// use mangater_sdk::traits::UrlRewriter;
+    /// use site_wikipedia::WikipediaInstance;
+    ///
+    /// let instance = WikipediaInstance::new();
+    /// assert_eq!(instance.rewrite_url("https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Global_thinking.svg/20px-Global_thinking.svg.png"),
+    ///   "https://upload.wikimedia.org/wikipedia/commons/4/41/Global_thinking.svg");
+    /// ```
     fn rewrite_url(&self, url: &str) -> String {
         let parts: Vec<&str> = url.split("/thumb/").collect();
         if parts.len() != 2 {

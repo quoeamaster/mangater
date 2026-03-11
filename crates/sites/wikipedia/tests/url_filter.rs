@@ -1,5 +1,6 @@
 use mangater_sdk::traits::UrlFilter;
 use site_wikipedia::WikipediaInstance;
+
 use tracing_subscriber::EnvFilter;
 
 fn init_tracing() {
@@ -51,13 +52,11 @@ fn test_wikipedia_url_filter() {
     for test_case in test_cases {
         let filtered = wikipedia.filter_url(test_case.url.as_str());
         tracing::debug!("original url {}, filtered to {}", test_case.url, filtered);
-        
+
         assert_eq!(
-            filtered,
-            test_case.expected,
+            filtered, test_case.expected,
             "expect a match on url {} for {} but end up opposite",
-            test_case.url,
-            test_case.expected
+            test_case.url, test_case.expected
         );
     }
 }

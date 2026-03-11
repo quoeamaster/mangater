@@ -3,9 +3,10 @@ use crate::util::file_location::{generate_file_path_to_persist, generate_url_for
 
 use mangater_sdk::entity::{AppConfigJson5, PatternMatchResult, PatternType, Registerable};
 use mangater_sdk::traits::Registry;
-use mangater_sdk::util::html_parsing::parse_images;
-use mangater_sdk::util::resource::download_resource;
-use mangater_sdk::util::resource::download_resource_to_file;
+use mangater_sdk::util::html_parsing::{clean_html_content, parse_images};
+use mangater_sdk::util::resource::{
+    create_parent_folders_if_needed, download_resource, download_resource_to_file,
+};
 use mangater_sdk::SdkError;
 
 use futures::stream::{self};
@@ -133,6 +134,14 @@ impl Engine {
                 let url_content_closure = url_content.clone();
                 let url_param_closure = url_param.clone();
                 let domain_key_closure = domain_key_arc.clone();
+                let root_folder = self
+                    .config
+                    .as_ref()
+                    .unwrap()
+                    .core
+                    .storage
+                    .root_folder
+                    .clone();
 
                 async move {
                     match pattern.pattern_type {
@@ -141,7 +150,16 @@ impl Engine {
                             return Ok(());
                         }
                         PatternType::Content => {
-                            tracing::warn!("content pattern is not supported yet");
+                            // call helper function to persist the content...
+                            scrap_and_persist_content(
+                                root_folder,
+                                &url_content_closure.as_str(),
+                                &url_param_closure.as_str(),
+                                &pattern,
+                                &registry,
+                            )
+                            .await?;
+
                             return Ok(());
                         }
                         PatternType::ScrapedContent => {
@@ -154,18 +172,9 @@ impl Engine {
                         }
                         // [TODO] extract out for unit test and maintenance concerncs
                         PatternType::Resource => {
-                            let root_folder = self
-                                .config
-                                .as_ref()
-                                .unwrap()
-                                .core
-                                .storage
-                                .root_folder
-                                .clone();
-
                             // calling the helper function
                             scrap_and_persist_resource(
-                                root_folder,
+                                root_folder.clone(),
                                 pattern.pattern.as_str(),
                                 &url_content_closure,
                                 &url_param_closure,
@@ -196,6 +205,39 @@ impl Engine {
     }
 }
 
+async fn scrap_and_persist_content(
+    root_folder: String,
+    url_content: &str,
+    url: &str,
+    pattern: &PatternMatchResult,
+    registry: &Registerable,
+) -> Result<(), SdkError> {
+    let clean_content = clean_html_content(url_content, Some(pattern.pattern.clone()));
+
+    match registry.storage.as_ref() {
+        Some(storage) => {
+            // have storage implementation to persist the content...
+            let clean_content_bytes = clean_content.as_bytes().to_vec();
+            let response = storage.persist(pattern, clean_content_bytes).await;
+
+            if let Err(e) = response {
+                tracing::error!("error persisting the content: {}", e.to_string());
+                return Err(e);
+            }
+        }
+        None => {
+            tracing::debug!("using default storage policy to persist the html content...");
+            let file_path = generate_file_path_to_persist(root_folder.clone(), url, None);
+            create_parent_folders_if_needed(file_path.clone())?;
+            tracing::debug!("** file_path to persist the content: {}", file_path);
+
+            std::fs::write(file_path, clean_content.as_bytes())
+                .map_err(|e| SdkError::Storage(e))?;
+        }
+    }
+    Ok(())
+}
+
 async fn scrap_and_persist_resource(
     root_folder: String,
     resource_type: &str,
@@ -208,7 +250,17 @@ async fn scrap_and_persist_resource(
     match resource_type {
         // at this moment only support image resources ('img' tag)
         "img" => {
-            let images = parse_images(url_content.to_string());
+            let mut images = parse_images(url_content.to_string());
+            if let Some(url_filter) = registry.url_filter.as_ref() {
+                // filtering if available...
+                images.retain(|html_image| url_filter.filter_url(&html_image.src.clone()));
+            }
+            if let Some(url_rewriter) = registry.url_rewriter.as_ref() {
+                // rewriting if available...
+                images.iter_mut().for_each(|html_image| {
+                    html_image.src = url_rewriter.rewrite_url(&html_image.src.clone());
+                });
+            }
             tracing::debug!(
                 "images parsed from url-content: {:?}, length: {}",
                 images,
@@ -315,6 +367,32 @@ mod tests {
                 }]
             }
         }
+        // copied from WikipediaInstance implementation...
+        impl mangater_sdk::traits::UrlFilter for DummyMatcher {
+            fn filter_url(&self, url: &str) -> bool {
+                url.contains("upload.wikimedia.org")
+            }
+        }
+        // copied from WikipediaInstance implementation...
+        impl mangater_sdk::traits::UrlRewriter for DummyMatcher {
+            fn rewrite_url(&self, url: &str) -> String {
+                let parts: Vec<&str> = url.split("/thumb/").collect();
+                if parts.len() != 2 {
+                    return url.to_string();
+                }
+                let base = parts[0];
+                let segments: Vec<&str> = parts[1].split('/').collect();
+                if segments.len() < 4 {
+                    return url.to_string();
+                }
+
+                let hash1 = segments[0];
+                let hash2 = segments[1];
+                let filename = segments[2];
+
+                format!("{}/{}/{}/{}", base, hash1, hash2, filename)
+            }
+        }
 
         let root_folder = "./testdata/scrap_and_persist_results".to_string();
         let resource_type = "img".to_string();
@@ -332,8 +410,8 @@ mod tests {
             configurator: None,
             matcher: Arc::new(DummyMatcher {}),
             storage: None,
-            url_filter: None,
-            url_rewriter: None,
+            url_filter: Some(Arc::new(DummyMatcher {})),
+            url_rewriter: Some(Arc::new(DummyMatcher {})),
         };
 
         // read content for local file...
@@ -363,7 +441,7 @@ mod tests {
 
         // check the file(s)... (at least 1 image should be present)
         let files =
-            fs::read_dir(format!("{}/en.wikipedia.org/icons", root_folder).as_str()).unwrap();
+            fs::read_dir(format!("{}/upload.wikimedia.org/57", root_folder).as_str()).unwrap();
         let mut img_files_cnt = 0;
 
         for file in files {
@@ -383,7 +461,7 @@ mod tests {
 
             match file_ext.as_str() {
                 "jpeg" | "jpg" | "png" | "gif" | "bmp" | "svg" | "tiff" | "ico" | "webp" => {
-                    tracing::info!(
+                    tracing::debug!(
                         "image file found: {} - size: {}",
                         file.path().display(),
                         file.metadata().unwrap().len()
@@ -397,6 +475,38 @@ mod tests {
             img_files_cnt > 0,
             "at least 1 image should be present, actual count: {}",
             img_files_cnt
+        );
+
+        // 2nd part (download the html content cleaned...)
+        let pattern = PatternMatchResult {
+            pattern: "#mw-content-text".to_string(),
+            pattern_type: PatternType::Resource,
+            resource_string: None,
+        };
+        let result =
+            scrap_and_persist_content(root_folder.clone(), &url_content, &url, &pattern, &registry)
+                .await;
+        assert!(result.is_ok());
+        // check directory... etc
+        let files =
+            fs::read_dir("./testdata/scrap_and_persist_results/en.wikipedia.org/wiki/").unwrap();
+        let mut content_files_cnt = 0;
+        for file in files {
+            let file = file.unwrap();
+            if file.path().is_file()
+                && file
+                    .file_name()
+                    .to_str()
+                    .unwrap()
+                    .contains("Relational_database")
+            {
+                content_files_cnt += 1;
+            }
+        }
+        assert_eq!(
+            content_files_cnt, 1,
+            "assume only 1 content file should be present, actual count: {}",
+            content_files_cnt
         );
     }
 }

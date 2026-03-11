@@ -40,7 +40,11 @@ fn test_wikipedia_url_rewriter() {
     for test_case in test_cases {
         let rewritten = wikipedia.rewrite_url(test_case.url.as_str());
         tracing::debug!("original url {}, rewritten to {}", test_case.url, rewritten);
-        
-        assert_eq!(rewritten, test_case.expected, "original url {}, expected {}, but got {}", test_case.url, test_case.expected, rewritten);
+
+        assert_eq!(
+            rewritten, test_case.expected,
+            "original url {}, expected {}, but got {}",
+            test_case.url, test_case.expected, rewritten
+        );
     }
 }

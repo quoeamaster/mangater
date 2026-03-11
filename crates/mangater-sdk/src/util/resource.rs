@@ -31,6 +31,16 @@ pub async fn download_resource(
     Ok(body.as_bytes().to_vec())
 }
 
+pub fn create_parent_folders_if_needed(file_path: String) -> Result<(), SdkError> {
+    let local_file_path = file_path.clone();
+    let file_path = std::path::Path::new(&local_file_path);
+    if let Some(parent) = file_path.parent() {
+        std::fs::create_dir_all(parent).unwrap();
+    }
+    tracing::debug!("folder(s) created: {}", file_path.display());
+    Ok(())
+}
+
 pub async fn download_resource_to_file(
     uri: String,
     user_agent: Option<String>,
@@ -57,12 +67,7 @@ pub async fn download_resource_to_file(
     );
 
     // create missing folder(s) if needed...
-    let local_file_path = file_path.clone();
-    let file_path = std::path::Path::new(&local_file_path);
-    if let Some(parent) = file_path.parent() {
-        std::fs::create_dir_all(parent).unwrap();
-    }
-    tracing::debug!("folder(s) created: {}", file_path.display());
+    create_parent_folders_if_needed(file_path.clone())?;
 
     let mut file = File::create(file_path).await?;
     let mut stream = response.bytes_stream();
