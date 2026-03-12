@@ -140,12 +140,7 @@ pub fn generate_url_for_fetching(resource_url: &str, resource_src: &str) -> Stri
         format!(
             "{}://{}",
             url_parts.scheme(),
-            format!(
-                "{}/{}",
-                url_parts.domain().unwrap(),
-                resource_src
-            )
-            .replace("//", "/")
+            format!("{}/{}", url_parts.domain().unwrap(), resource_src).replace("//", "/")
         )
     }
 }

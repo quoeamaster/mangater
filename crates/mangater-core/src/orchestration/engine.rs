@@ -46,9 +46,8 @@ impl Engine {
         &mut self,
         config_file: String,
     ) -> Result<&AppConfigJson5, SdkError> {
-        let config_content = fs::read_to_string(config_file.clone()).map_err(|e| {
-            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e))
-        })?;
+        let config_content = fs::read_to_string(config_file.clone())
+            .map_err(|e| SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e)))?;
 
         let config: AppConfigJson5 =
             json5::from_str(&config_content).map_err(|e| SdkError::InvalidConfig(e.to_string()))?;
@@ -62,9 +61,8 @@ impl Engine {
         &mut self,
         config_file: String,
     ) -> Result<&AppConfigJson5, SdkError> {
-        let config_content = fs::read_to_string(config_file.clone()).map_err(|e| {
-            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e))
-        })?;
+        let config_content = fs::read_to_string(config_file.clone())
+            .map_err(|e| SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e)))?;
 
         let config: AppConfigJson5 = serde_json::from_str(&config_content)
             .map_err(|e| SdkError::InvalidConfig(e.to_string()))?;
@@ -252,8 +250,7 @@ async fn scrap_and_persist_content(
             create_parent_folders_if_needed(file_path.clone())?;
             tracing::debug!("** file_path to persist the content: {}", file_path);
 
-            std::fs::write(file_path, clean_content.as_bytes())
-                .map_err(SdkError::Storage)?;
+            std::fs::write(file_path, clean_content.as_bytes()).map_err(SdkError::Storage)?;
         }
     }
     Ok(())

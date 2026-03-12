@@ -74,13 +74,9 @@ pub async fn download_resource_to_file(
 
     while let Some(chunk) = stream.next().await {
         let chunk = chunk.map_err(|e| SdkError::Network(e.to_string()))?;
-        file.write_all(&chunk)
-            .await
-            .map_err(SdkError::Storage)?;
+        file.write_all(&chunk).await.map_err(SdkError::Storage)?;
     }
-    file.flush()
-        .await
-        .map_err(SdkError::Storage)?;
+    file.flush().await.map_err(SdkError::Storage)?;
 
     Ok(())
 }
