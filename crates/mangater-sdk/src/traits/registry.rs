@@ -7,7 +7,6 @@ pub trait Registry {
     /// key could be the following:
     /// - domain name (e.g. "www.wikipedia.org")
     /// - plugin / implementation name (e.g. "wikipedia")
-    /// as long as it can uniquely identify the implementation.
     fn add_to_registry(&mut self, key: Option<String>, domain: Arc<dyn Domain>);
 
     fn resolve_domain(&self, url: &str) -> (Option<Arc<dyn Domain>>, String);

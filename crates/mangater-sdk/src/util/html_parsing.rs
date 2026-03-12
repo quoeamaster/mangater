@@ -5,7 +5,7 @@ use crate::entity::{HtmlImage, HtmlPlainTextAndImages};
 pub fn clean_html_content(content: &str, selector_in_string: Option<String>) -> String {
     tracing::trace!("** html full content before cleaning: {}", content);
 
-    let document = Html::parse_document(&content);
+    let document = Html::parse_document(content);
     let selector_in_string_final = selector_in_string.unwrap_or("#mw-content-text".to_string());
 
     let selector = Selector::parse(&selector_in_string_final).unwrap();
@@ -108,7 +108,7 @@ pub fn parse_plain_text_and_images(
     let text = clean_text(&content);
 
     HtmlPlainTextAndImages {
-        text: text,
+        text, // text: text,
         images: parse_images_through_html(&document),
     }
 }

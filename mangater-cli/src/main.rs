@@ -22,10 +22,12 @@ fn init_tracing(log_level: &LogLevel) {
         .with_target(false)
         .with_file(true)
         .with_line_number(true)
-        .init();
+        .try_init()
+        .unwrap_or_else(|e| panic!("Failed to initialize tracing: {}", e));
 }
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     init_tracing(&cli.log_level);
@@ -36,7 +38,13 @@ fn main() -> anyhow::Result<()> {
 
     // match the sub-command and execute the corresponding code logics
     match cli.command {
-        cli::Commands::Scrap(scrap_args) => cmd::scrap(scrap_args)?,
+        cli::Commands::Scrap(scrap_args) => {
+            match cmd::scrap(scrap_args, cli.config_mode, cli.config).await {
+                Ok(_) => {}
+                Err(e) => return Err(e),
+            }
+            return Ok(());
+        }
         cli::Commands::ListDomains => {
             match cmd::list_domains(cli.config_mode, cli.config) {
                 Ok(_) => {}
@@ -45,12 +53,4 @@ fn main() -> anyhow::Result<()> {
             return Ok(());
         }
     }
-
-    // let config = load_config(&cli)?;
-
-    // let mut engine = build_engine()?;
-
-    // engine.run(config)?;
-
-    Ok(())
 }

@@ -22,6 +22,13 @@ pub struct Engine {
     config: Option<AppConfigJson5>,
 }
 
+impl Default for Engine {
+    fn default() -> Self {
+        // calling the new fn() constructor to initialize the instance
+        Self::new()
+    }
+}
+
 impl Engine {
     pub fn new() -> Self {
         Self {
@@ -40,7 +47,7 @@ impl Engine {
         config_file: String,
     ) -> Result<&AppConfigJson5, SdkError> {
         let config_content = fs::read_to_string(config_file.clone()).map_err(|e| {
-            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e.to_string()))
+            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e))
         })?;
 
         let config: AppConfigJson5 =
@@ -56,7 +63,7 @@ impl Engine {
         config_file: String,
     ) -> Result<&AppConfigJson5, SdkError> {
         let config_content = fs::read_to_string(config_file.clone()).map_err(|e| {
-            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e.to_string()))
+            SdkError::InvalidConfig(format!("{} - {}", config_file.clone(), e))
         })?;
 
         let config: AppConfigJson5 = serde_json::from_str(&config_content)
@@ -84,7 +91,11 @@ impl Engine {
 }
 
 impl Engine {
-    pub async fn run_scrap_workflow(&self, url: String) -> Result<(), SdkError> {
+    pub async fn run_scrap_workflow(
+        &mut self,
+        url: String,
+        output_folder: Option<String>,
+    ) -> Result<(), SdkError> {
         let (domain, domain_key) = self.registry.resolve_domain(url.as_str());
         // actually if no Domain found, not supported and throw an error
         if domain.is_none() {
@@ -93,6 +104,12 @@ impl Engine {
         if let Some(domain) = domain {
             let patterns = domain.get_domain_registerable().matcher.match_patterns();
             tracing::info!("patterns: {:?}", patterns);
+
+            // in case the output folder is provided, override the config file's `core.storage.root_folder` value
+            if let Some(output_folder) = output_folder {
+                self.config.as_mut().unwrap().core.storage.root_folder = output_folder.clone();
+                tracing::info!("** output folder overridden: {}", output_folder);
+            }
 
             // check the patterns and check if need to scrap OR the content already ready for storage...
             self.scrap_and_persist(
@@ -125,7 +142,7 @@ impl Engine {
             SdkError::Parse(format!(
                 "{} contents could not be parsed into string -> {}",
                 url.clone(),
-                e.to_string()
+                e
             ))
         })?;
 
@@ -151,28 +168,28 @@ impl Engine {
                     match pattern.pattern_type {
                         PatternType::Pagination => {
                             tracing::warn!("pagination pattern is not supported yet");
-                            return Ok(());
+                            Ok(())
                         }
                         PatternType::Content => {
                             // call helper function to persist the content...
                             scrap_and_persist_content(
                                 root_folder,
-                                &url_content_closure.as_str(),
-                                &url_param_closure.as_str(),
-                                &pattern,
-                                &registry,
+                                url_content_closure.as_str(),
+                                url_param_closure.as_str(),
+                                pattern,
+                                registry,
                             )
                             .await?;
 
-                            return Ok(());
+                            Ok(())
                         }
                         PatternType::ScrapedContent => {
                             tracing::warn!("scraped content pattern is not supported yet");
-                            return Ok(());
+                            Ok(())
                         }
                         PatternType::Others => {
                             tracing::warn!("others pattern is not supported yet");
-                            return Ok(());
+                            Ok(())
                         }
                         // [TODO] extract out for unit test and maintenance concerncs
                         PatternType::Resource => {
@@ -183,12 +200,12 @@ impl Engine {
                                 &url_content_closure,
                                 &url_param_closure,
                                 domain_key_closure.to_string(),
-                                &pattern,
-                                &registry,
+                                pattern,
+                                registry,
                             )
                             .await?;
 
-                            return Ok(());
+                            Ok(())
                         }
                     }
                 }
@@ -236,7 +253,7 @@ async fn scrap_and_persist_content(
             tracing::debug!("** file_path to persist the content: {}", file_path);
 
             std::fs::write(file_path, clean_content.as_bytes())
-                .map_err(|e| SdkError::Storage(e))?;
+                .map_err(SdkError::Storage)?;
         }
     }
     Ok(())
@@ -318,7 +335,7 @@ async fn scrap_and_persist_resource(
                         );
                         let file_path = generate_file_path_to_persist(
                             root_folder.clone(),
-                            &image_src_url.clone().as_str(),
+                            image_src_url.clone().as_str(),
                             None,
                         );
                         tracing::debug!("** file_path to persist the image: {}", file_path);

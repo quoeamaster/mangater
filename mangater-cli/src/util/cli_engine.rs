@@ -38,6 +38,5 @@ pub fn build_engine(
         );
     }
     //engine.registry().add_to_registry(None, Box::new(wikipedia::Wikipedia::new()));
-
     engine
 }

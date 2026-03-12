@@ -24,6 +24,13 @@ pub struct WikipediaInstance {
     config: WikipediaConfig,
 }
 
+impl Default for WikipediaInstance {
+    fn default() -> Self {
+        // calling the new fn() constructor to initialize the instance
+        Self::new()
+    }
+}
+
 impl WikipediaInstance {
     pub fn new() -> Self {
         Self {

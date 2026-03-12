@@ -65,7 +65,7 @@ pub fn generate_file_path_to_persist(
             last_part_of_url = "".to_string();
             source_file_name = url_path_segments[0].to_string();
 
-            if source_file_name == "" {
+            if source_file_name.is_empty() {
                 source_file_name = "default_file".to_string();
             }
         } else {
@@ -130,23 +130,23 @@ pub fn generate_url_for_fetching(resource_url: &str, resource_src: &str) -> Stri
 
     // If resource_src is already a full URL, return it directly.
     if resource_src.starts_with("https://") || resource_src.starts_with("http://") {
-        return resource_src.to_string();
+        resource_src.to_string()
     } else if resource_src.starts_with("//") {
         // assume https://
-        return format!("https://{}", resource_src);
+        format!("https://{}", resource_src)
     } else {
         // Otherwise, build an absolute URL using resource_url's scheme and domain.
         let url_parts = Url::parse(resource_url).ok().unwrap();
-        return format!(
+        format!(
             "{}://{}",
             url_parts.scheme(),
             format!(
                 "{}/{}",
-                url_parts.domain().unwrap().to_string(),
+                url_parts.domain().unwrap(),
                 resource_src
             )
             .replace("//", "/")
-        );
+        )
     }
 }
 

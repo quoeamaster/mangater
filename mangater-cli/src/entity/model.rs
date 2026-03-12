@@ -1,3 +1,5 @@
+use std::fmt;
+
 use clap::ValueEnum;
 
 // #[derive(clap::Args, Clone, Debug)]
@@ -17,7 +19,7 @@ pub struct ScrapArgs {
     #[arg(short, long)]
     pub url: String,
 
-    /// Output file path
+    /// override the config file's `core.storage.root_folder` value if provided
     #[arg(short, long)]
     pub output: Option<String>,
 }
@@ -39,14 +41,14 @@ pub enum LogLevel {
     Error,
 }
 
-impl LogLevel {
-    pub fn to_string(&self) -> String {
+impl fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            LogLevel::Trace => String::from("trace"),
-            LogLevel::Debug => String::from("debug"),
-            LogLevel::Info => String::from("info"),
-            LogLevel::Warn => String::from("warn"),
-            LogLevel::Error => String::from("error"),
+            LogLevel::Trace => write!(f, "trace"),
+            LogLevel::Debug => write!(f, "debug"),
+            LogLevel::Info => write!(f, "info"),
+            LogLevel::Warn => write!(f, "warn"),
+            LogLevel::Error => write!(f, "error"),
         }
     }
 }

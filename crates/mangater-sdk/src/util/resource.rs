@@ -76,11 +76,11 @@ pub async fn download_resource_to_file(
         let chunk = chunk.map_err(|e| SdkError::Network(e.to_string()))?;
         file.write_all(&chunk)
             .await
-            .map_err(|e| SdkError::Storage(e))?;
+            .map_err(SdkError::Storage)?;
     }
     file.flush()
         .await
-        .map_err(|e| SdkError::Storage(e.into()))?;
+        .map_err(SdkError::Storage)?;
 
     Ok(())
 }

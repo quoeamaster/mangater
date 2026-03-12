@@ -35,3 +35,5 @@ report.features
 
 # unit test related
 **/testdata/scrap_and_persist_results/*
+**/testdata/scrap-local-content/*
+
