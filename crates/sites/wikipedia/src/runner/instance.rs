@@ -80,7 +80,7 @@ impl Matcher for WikipediaInstance {
     ///    then return a vector of PatternMatchResult for the engine to handle the rest. (type is `ScrapedContent`)
     ///
     /// for simplicity, will use approach 1 for now.
-    fn match_patterns(&self) -> Vec<PatternMatchResult> {
+    fn match_patterns(&self, _url: &str) -> Vec<PatternMatchResult> {
         let mut results = Vec::new();
 
         // means scrap the images based on <img> tag
@@ -88,6 +88,7 @@ impl Matcher for WikipediaInstance {
             pattern: "img".to_string(),
             pattern_type: PatternType::Resource,
             resource_string: None,
+            additoinal_params: None,
         });
         // need to scrap the plain-text content???
         if self.config.need_content {
@@ -95,6 +96,7 @@ impl Matcher for WikipediaInstance {
                 pattern: "#mw-content-text".to_string(),
                 pattern_type: PatternType::Content,
                 resource_string: None,
+                additoinal_params: None,
             });
         }
         results

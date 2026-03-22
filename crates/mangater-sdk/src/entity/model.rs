@@ -68,6 +68,9 @@ pub enum PatternType {
     Content,
     /// the content(s) are already ready for usage (e.g. storage or further analysis)
     ScrapedContent,
+    /// provides the actual URI for fetching later on
+    ActualUri,
+    /// Used to match the uri of the pagination (e.g. "next" page link)
     /// other use cases... (to be defined or custom implementations can make use of this pattery-type)
     Others,
 }
@@ -77,6 +80,8 @@ pub struct PatternMatchResult {
     pub pattern: String,
     pub pattern_type: PatternType,
     pub resource_string: Option<String>,
+    // for any additional parameters
+    pub additoinal_params: Option<HashMap<String, String>>,
 }
 
 pub struct Registerable {

@@ -100,7 +100,7 @@ impl Engine {
             return Err(SdkError::Unsupported(url.to_string()));
         }
         if let Some(domain) = domain {
-            let patterns = domain.get_domain_registerable().matcher.match_patterns();
+            let patterns = domain.get_domain_registerable().matcher.match_patterns(url.as_str());
             tracing::info!("patterns: {:?}", patterns);
 
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
@@ -187,6 +187,17 @@ impl Engine {
                         }
                         PatternType::Others => {
                             tracing::warn!("others pattern is not supported yet");
+                            Ok(())
+                        }
+                        PatternType::ActualUri => {
+                            scrap_provided_uri_and_persist(
+                                root_folder,
+                                url_param_closure.as_str(),
+                                pattern,
+                                domain_key_closure.to_string(),
+                                registry
+                            ).await?;
+
                             Ok(())
                         }
                         // [TODO] extract out for unit test and maintenance concerncs
@@ -355,6 +366,76 @@ async fn scrap_and_persist_resource(
     }
 }
 
+async fn scrap_provided_uri_and_persist(
+    root_folder: String,
+    src_url: &str,
+    pattern: &PatternMatchResult,
+    domain_key: String,
+    registry: &Registerable,
+) -> Result<(), SdkError> {
+
+    let mut image_url = pattern.resource_string.as_ref().unwrap().clone();
+    // any filtering?
+    if let Some(url_filter) = registry.url_filter.as_ref() {
+        if !url_filter.filter_url(&image_url) {
+            tracing::debug!("{} -> image url filtered out: {}", domain_key, image_url);
+            return Ok(());
+        }
+    }
+    // any rewriting?
+    if let Some(url_rewriter) = registry.url_rewriter.as_ref() {
+        image_url = url_rewriter.rewrite_url(&image_url);
+    }
+    // generate url (if necessary)
+    image_url = generate_url_for_fetching(src_url, &image_url);
+
+    // download the resource
+    let mut user_agent: Option<String> = None;
+    if !pattern.pattern.is_empty() {
+        user_agent = Some(pattern.pattern.clone());
+    }
+    tracing::info!("{} -> user_agent to be used: {:?}", domain_key, user_agent);
+
+    let image_bytes = download_resource(image_url.clone(), user_agent.clone())
+        .await
+        .map_err(|e| SdkError::NotFound(e.to_string()));
+    
+    if let Err(e) = image_bytes {
+        tracing::warn!("{} -> error downloading the image: {}", domain_key, e.to_string());
+        return Ok(());
+    }
+    let image_bytes = image_bytes.unwrap();
+    tracing::debug!(
+        "image_bytes downloaded: valid ? size: {}",
+        image_bytes.len()
+    );
+
+    // has storage implementation to persist the resource...???
+    match registry.storage.as_ref() {
+        Some(storage) => {
+            let response = storage.persist(pattern, image_bytes).await;
+            if let Err(e) = response {
+                tracing::error!("error persisting the resource: {}", e.to_string());
+                return Err(e);
+            }
+        }
+        None => {
+            tracing::debug!(
+                "utilizing default storage policy to persist the resource..."
+            );
+            let file_path = generate_file_path_to_persist(
+                root_folder.clone(),
+                src_url,
+                pattern.additoinal_params.as_ref().and_then(|params| params.get("chapter_id").cloned()),
+            );
+            tracing::info!("** file_path to persist the image: {}", file_path);
+
+            download_resource_to_file(image_url.clone(), user_agent, file_path).await?;
+        }
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -387,11 +468,12 @@ mod tests {
 
         struct DummyMatcher {}
         impl mangater_sdk::traits::Matcher for DummyMatcher {
-            fn match_patterns(&self) -> Vec<PatternMatchResult> {
+            fn match_patterns(&self, _url: &str) -> Vec<PatternMatchResult> {
                 vec![PatternMatchResult {
                     pattern: "img".to_string(),
                     pattern_type: PatternType::Resource,
                     resource_string: None,
+                    additoinal_params: None,
                 }]
             }
         }
@@ -433,6 +515,7 @@ mod tests {
             pattern: "img".to_string(),
             pattern_type: PatternType::Resource,
             resource_string: None,
+            additoinal_params: None,
         };
         let registry = Registerable {
             configurator: None,
@@ -510,6 +593,7 @@ mod tests {
             pattern: "#mw-content-text".to_string(),
             pattern_type: PatternType::Resource,
             resource_string: None,
+            additoinal_params: None,
         };
         let result =
             scrap_and_persist_content(root_folder.clone(), &url_content, &url, &pattern, &registry)

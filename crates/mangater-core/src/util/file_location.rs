@@ -76,11 +76,22 @@ pub fn generate_file_path_to_persist(
 
     // Use .replace() to avoid double slashes in the path due to empty segments
     match chapter {
-        Some(chapter) => format!(
-            "{}/{}/{}/{}/{}",
-            root_folder_path, domain_key, last_part_of_url, chapter, source_file_name
-        )
-        .replace("//", "/"),
+        Some(chapter) => {
+            // only works if the chapter value provided is not empty and Some()
+            if !chapter.is_empty() {
+                format!(
+                    "{}/{}/{}/{}/{}",
+                    root_folder_path, domain_key, last_part_of_url, chapter, source_file_name
+                )
+                .replace("//", "/")
+            } else {
+                format!(
+                    "{}/{}/{}/{}",
+                    root_folder_path, domain_key, last_part_of_url, source_file_name
+                )
+                .replace("//", "/")
+            }
+        },
         None => format!(
             "{}/{}/{}/{}",
             root_folder_path, domain_key, last_part_of_url, source_file_name

@@ -35,5 +35,5 @@ pub trait Matcher: Send + Sync {
     // async fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult>;
     /// instead of doing the heavy-duty operations (e.g. match and scrap), this matcher provides the patterns for the engine to handle the rest.
     /// fn match_patterns(&self, config: &dyn Config) -> Vec<PatternMatchResult>;
-    fn match_patterns(&self) -> Vec<PatternMatchResult>;
+    fn match_patterns(&self, url: &str) -> Vec<PatternMatchResult>;
 }

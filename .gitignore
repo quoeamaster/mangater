@@ -37,3 +37,10 @@ report.features
 **/testdata/scrap_and_persist_results/*
 **/testdata/scrap-local-content/*
 
+# ai / model related
+**/ai/*
+
+# testing related
+**/testdata/raw/*
+
+
