@@ -913,6 +913,7 @@ dependencies = [
  "mangater-sdk",
  "serde",
  "serde_json",
+ "site-mangadex",
  "site-wikipedia",
  "tokio",
  "tracing",

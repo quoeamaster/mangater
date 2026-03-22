@@ -1,4 +1,6 @@
-pub mod runner;
+mod runner;
+
+pub use runner::instance::MangadexInstance;
 
 #[cfg(test)]
 mod tests {

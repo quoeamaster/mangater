@@ -19,6 +19,7 @@ pub fn build_engine(
         ConfigMode::Json => engine.config_load_from_json_file(config_file_path).unwrap(),
     };
     tracing::debug!("overall app config: {:?}", app_config);
+    //engine.registry().add_to_registry(None, Box::new(wikipedia::Wikipedia::new()));
 
     // *** wikipedia plugin registration ***
     #[cfg(feature = "wikipedia")]
@@ -37,6 +38,17 @@ pub fn build_engine(
             Arc::new(wikipedia.clone()),
         );
     }
-    //engine.registry().add_to_registry(None, Box::new(wikipedia::Wikipedia::new()));
+    // *** mangadex plugin registration ***
+    #[cfg(feature = "mangadex")]
+    {
+        use mangater_sdk::traits::Domain;
+        use site_mangadex::MangadexInstance;
+
+        let mangadex = MangadexInstance::new();
+        engine
+            .registry()
+            .add_to_registry(Some(mangadex.get_domain_key()), Arc::new(mangadex.clone()));
+    }
+
     engine
 }

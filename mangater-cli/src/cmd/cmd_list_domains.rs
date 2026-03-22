@@ -11,7 +11,7 @@ pub fn list_domains(
 
     println!("Registered domain(s), count: {}", domains.len());
     for domain in &domains {
-        println!("- {}\r\n", domain);
+        println!("- {}", domain);
     }
     Ok(domains)
 }
