@@ -12,7 +12,14 @@ pub async fn scrap(
 
     let mut engine = build_engine(config_mode, config_file);
 
-    match engine.run_scrap_workflow(args.url, args.output).await {
+    match engine
+        .run_scrap_workflow(
+            args.clone().url,
+            args.clone().output,
+            args.clone().params_map().clone(),
+        )
+        .await
+    {
         Ok(_) => Ok(()),
         Err(e) => Err(anyhow::anyhow!(
             "error scrapping and persisting the resources: {}",

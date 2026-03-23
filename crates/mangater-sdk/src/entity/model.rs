@@ -140,3 +140,12 @@ pub struct StorageConfig {
     #[serde(default)]
     pub root_folder: String,
 }
+
+/// Context object containing parameters for plugin execution.
+///
+/// `PluginContext` provides access to the key-value parameters supplied to a plugin at runtime.
+/// These parameters can be used to guide plugin behavior depending on the specific use case.
+#[derive(Clone, Debug, Default)]
+pub struct PluginContext {
+    pub params: HashMap<String, String>,
+}

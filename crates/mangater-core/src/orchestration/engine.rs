@@ -1,7 +1,9 @@
 use crate::orchestration::model::RegistryMapImplementation;
 use crate::util::file_location::{generate_file_path_to_persist, generate_url_for_fetching};
 
-use mangater_sdk::entity::{AppConfigJson5, PatternMatchResult, PatternType, Registerable};
+use mangater_sdk::entity::{
+    AppConfigJson5, PatternMatchResult, PatternType, PluginContext, Registerable,
+};
 use mangater_sdk::traits::Registry;
 use mangater_sdk::util::html_parsing::{clean_html_content, parse_images};
 use mangater_sdk::util::resource::{
@@ -93,6 +95,7 @@ impl Engine {
         &mut self,
         url: String,
         output_folder: Option<String>,
+        params: std::collections::HashMap<String, String>,
     ) -> Result<(), SdkError> {
         let (domain, domain_key) = self.registry.resolve_domain(url.as_str());
         // actually if no Domain found, not supported and throw an error
@@ -100,10 +103,13 @@ impl Engine {
             return Err(SdkError::Unsupported(url.to_string()));
         }
         if let Some(domain) = domain {
-            let patterns = domain
-                .get_domain_registerable()
-                .matcher
-                .match_patterns(url.as_str());
+            let patterns = domain.get_domain_registerable().matcher.match_patterns(
+                url.as_str(),
+                Some(PluginContext {
+                    params: params.clone(),
+                }),
+            );
+            tracing::debug!("params: {:?}", params);
             tracing::debug!("patterns: {:?}", patterns);
 
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
@@ -452,6 +458,7 @@ async fn scrap_provided_uri_and_persist(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use mangater_sdk::entity::PluginContext;
     use tracing_subscriber::EnvFilter;
 
     /// Initializes the tracing subscriber for logging with environment filter settings.
@@ -481,7 +488,11 @@ mod tests {
 
         struct DummyMatcher {}
         impl mangater_sdk::traits::Matcher for DummyMatcher {
-            fn match_patterns(&self, _url: &str) -> Vec<PatternMatchResult> {
+            fn match_patterns(
+                &self,
+                _url: &str,
+                _context: Option<PluginContext>,
+            ) -> Vec<PatternMatchResult> {
                 vec![PatternMatchResult {
                     pattern: "img".to_string(),
                     pattern_type: PatternType::Resource,

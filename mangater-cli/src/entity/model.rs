@@ -13,6 +13,31 @@ use clap::ValueEnum;
 //     pub config_mode: ConfigMode,
 // }
 
+// fn parse_key_val<K, V>(s: &str) -> Result<(K, V), String>
+// where
+//     K: std::str::FromStr,
+//     V: std::str::FromStr,
+//     K::Err: std::fmt::Display,
+//     V::Err: std::fmt::Display,
+// {
+//     let pos = s.find('=').ok_or_else(|| {
+//         format!("invalid KEY=value: no `=` found in `{}`", s)
+//     })?;
+
+//     let key = s[..pos].parse().map_err(|e| format!("key error: {}", e))?;
+//     let val = s[pos + 1..].parse().map_err(|e| format!("value error: {}", e))?;
+
+//     Ok((key, val))
+// }
+
+fn parse_key_val_str(s: &str) -> Result<(String, String), String> {
+    let pos = s
+        .find('=')
+        .ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
+
+    Ok((s[..pos].to_string(), s[pos + 1..].to_string()))
+}
+
 #[derive(clap::Args, Clone, Debug)]
 pub struct ScrapArgs {
     /// URL to scrape (mandatory)
@@ -22,6 +47,36 @@ pub struct ScrapArgs {
     /// override the config file's `core.storage.root_folder` value if provided
     #[arg(short, long)]
     pub output: Option<String>,
+
+    /// Plugin-specific parameters (key=value), repeatable
+    /// Example: --param q=mars --param limit=5
+    #[arg(long = "param", value_parser = parse_key_val_str)]
+    pub params: Vec<(String, String)>,
+}
+
+impl ScrapArgs {
+    /// Converts the vector of `(String, String)` pairs in `params`
+    /// into a `HashMap<String, String>` for convenient lookup.
+    ///
+    /// # Returns
+    ///
+    /// A `HashMap` where each key-value parameter is individually accessible.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let args = mangater_cli::entity::ScrapArgs {
+    ///     url: "http://example.com".to_string(),
+    ///     output: None,
+    ///     params: vec![("q".to_string(), "mars".to_string()), ("limit".to_string(), "5".to_string())]
+    /// };
+    /// let map = args.params_map();
+    /// assert_eq!(map.get("q"), Some(&"mars".to_string()));
+    /// assert_eq!(map.get("limit"), Some(&"5".to_string()));
+    /// ```
+    pub fn params_map(&self) -> std::collections::HashMap<String, String> {
+        self.params.iter().cloned().collect()
+    }
 }
 
 #[derive(Clone, ValueEnum, Debug)]

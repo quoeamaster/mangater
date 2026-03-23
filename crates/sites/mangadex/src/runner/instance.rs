@@ -1,7 +1,6 @@
 use crate::runner::util::{block_on_async, extract_chapter_id_from_url, fetch_image_urls};
 
-use mangater_sdk::entity::PatternType;
-use mangater_sdk::entity::{PatternMatchResult, Registerable};
+use mangater_sdk::entity::{PatternMatchResult, PatternType, PluginContext, Registerable};
 use mangater_sdk::traits::{Domain, Matcher};
 use mangater_sdk::SdkError;
 
@@ -69,7 +68,11 @@ impl Domain for MangadexInstance {
 }
 
 impl Matcher for MangadexInstance {
-    fn match_patterns(&self, url: &str) -> Vec<PatternMatchResult> {
+    fn match_patterns(
+        &self,
+        url: &str,
+        _context: Option<PluginContext>,
+    ) -> Vec<PatternMatchResult> {
         // get chapter id from the url
         let chapter_id = match extract_chapter_id_from_url(url) {
             Some(id) => id,

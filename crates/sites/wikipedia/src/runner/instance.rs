@@ -1,5 +1,4 @@
-use mangater_sdk::entity::PatternType;
-use mangater_sdk::entity::{PatternMatchResult, Registerable};
+use mangater_sdk::entity::{PatternMatchResult, PatternType, PluginContext, Registerable};
 use mangater_sdk::traits::{Config, Domain, Matcher, UrlFilter, UrlRewriter};
 use mangater_sdk::SdkError;
 
@@ -80,7 +79,11 @@ impl Matcher for WikipediaInstance {
     ///    then return a vector of PatternMatchResult for the engine to handle the rest. (type is `ScrapedContent`)
     ///
     /// for simplicity, will use approach 1 for now.
-    fn match_patterns(&self, _url: &str) -> Vec<PatternMatchResult> {
+    fn match_patterns(
+        &self,
+        _url: &str,
+        _context: Option<PluginContext>,
+    ) -> Vec<PatternMatchResult> {
         let mut results = Vec::new();
 
         // means scrap the images based on <img> tag

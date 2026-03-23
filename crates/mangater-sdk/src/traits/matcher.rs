@@ -26,14 +26,11 @@
 // SOFTWARE.
 
 use crate::entity::PatternMatchResult;
+use crate::entity::PluginContext;
 
 /// The `Matcher` trait defines the interface for matching resource patterns from a given source,
 /// such as a web page. Implementors should provide logic that takes a list of patterns (with associated types),
 /// searches for matches according to their own matching logic, and returns the results as a collection of `PatternMatchResult`.
 pub trait Matcher: Send + Sync {
-    // [obsolete]
-    // async fn match_patterns(&self, patterns: &[PatternAndType]) -> Vec<PatternMatchResult>;
-    /// instead of doing the heavy-duty operations (e.g. match and scrap), this matcher provides the patterns for the engine to handle the rest.
-    /// fn match_patterns(&self, config: &dyn Config) -> Vec<PatternMatchResult>;
-    fn match_patterns(&self, url: &str) -> Vec<PatternMatchResult>;
+    fn match_patterns(&self, url: &str, context: Option<PluginContext>) -> Vec<PatternMatchResult>;
 }
