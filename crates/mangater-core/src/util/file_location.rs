@@ -23,6 +23,7 @@ use url::Url;
 ///     "./data".to_string(),
 ///     "https://example.com/chapter1/page1/image.jpg",
 ///     Some("chapter1".to_string()),
+///     Some("image.jpg".to_string()),
 /// );
 /// assert_eq!(path, "./data/example.com/page1/chapter1/image.jpg");
 /// ```
@@ -47,17 +48,19 @@ pub fn generate_file_path_to_persist(
     if let Some(filepath) = filepath {
         // extract only the last segment
         let filepath_parts: Vec<_> = filepath.split('/').collect();
-        if filepath_parts.len() > 0 {
+        if !filepath_parts.is_empty() {
             source_file_name = filepath_parts[filepath_parts.len() - 1].to_string();
         } else {
             source_file_name = "".to_string();
         }
     }
-
     tracing::debug!(
-        "url parts length {} and actual content: {:?}",
+        "{} -> url parts length {} and actual content: {:?}, source file name: {}, is empty: {}",
+        url,
         url_path_segments.len(),
-        url_path_segments
+        url_path_segments,
+        source_file_name,
+        source_file_name.is_empty()
     );
 
     if url_path_segments.len() > 2 {
@@ -82,6 +85,10 @@ pub fn generate_file_path_to_persist(
             if source_file_name.is_empty() {
                 source_file_name = url_path_segments[0].to_string();
             }
+            // [lesson] extreme case, both last part of url and source file name are empty, use a default value
+            if source_file_name.is_empty() {
+                source_file_name = "default_file".to_string();
+            }
         } else {
             last_part_of_url = "".to_string();
             if source_file_name.is_empty() {
@@ -89,6 +96,11 @@ pub fn generate_file_path_to_persist(
             }
         }
     }
+    tracing::debug!(
+        "last part of url: {}, source file name: {}",
+        last_part_of_url,
+        source_file_name
+    );
 
     // Use .replace() to avoid double slashes in the path due to empty segments
     match chapter {
@@ -107,7 +119,7 @@ pub fn generate_file_path_to_persist(
                 )
                 .replace("//", "/")
             }
-        },
+        }
         None => format!(
             "{}/{}/{}/{}",
             root_folder_path, domain_key, last_part_of_url, source_file_name
@@ -175,10 +187,25 @@ pub fn generate_url_for_fetching(resource_url: &str, resource_src: &str) -> Stri
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tracing_subscriber::EnvFilter;
+
+    fn init_tracing() {
+        let filter = EnvFilter::new("info");
+
+        let _ = tracing_subscriber::fmt()
+            .with_env_filter(filter)
+            .with_target(false)
+            .with_file(true)
+            .with_line_number(true)
+            .try_init();
+    }
 
     #[test]
     fn test_generate_file_path_to_persist() {
+        init_tracing();
+
         struct TestCase {
+            sequence: u32,
             root_folder_path: String,
             url: String,
             chapter: Option<String>,
@@ -186,6 +213,7 @@ mod tests {
         }
         let test_cases = vec![
             TestCase {
+                sequence: 1,
                 root_folder_path: "./testing".to_string(),
                 url: "https://www.example.com/chapter1/page1/image.jpg".to_string(),
                 chapter: Some("chapter1".to_string()),
@@ -193,24 +221,28 @@ mod tests {
                     .to_string(),
             },
             TestCase {
+                sequence: 2,
                 root_folder_path: "/dev/null".to_string(),
                 url: "https://en.wiki.org/nosql/image.pNg".to_string(),
                 chapter: None,
                 expected_file_path: "/dev/null/en.wiki.org/nosql/image.pNg".to_string(),
             },
             TestCase {
+                sequence: 3,
                 root_folder_path: "./".to_string(),
                 url: "https://en.wiki.org/nosql/index.htm".to_string(),
                 chapter: None,
                 expected_file_path: "./en.wiki.org/nosql/index.htm".to_string(),
             },
             TestCase {
+                sequence: 4,
                 root_folder_path: "./".to_string(),
                 url: "https://en.wiki.org/nosql".to_string(),
                 chapter: None,
                 expected_file_path: "./en.wiki.org/nosql".to_string(),
             },
             TestCase {
+                sequence: 5,
                 root_folder_path: "./".to_string(),
                 url: "https://en.wiki.org".to_string(),
                 chapter: None,
@@ -230,12 +262,18 @@ mod tests {
                 test_case.url,
                 file_path
             );
-            assert_eq!(file_path, test_case.expected_file_path);
+            assert_eq!(
+                file_path, test_case.expected_file_path,
+                "test case {} failed",
+                test_case.sequence
+            );
         }
     }
 
     #[test]
     fn test_generate_url_for_fetching() {
+        init_tracing();
+
         struct TestCase {
             name: String,
             url: String,

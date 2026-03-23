@@ -100,7 +100,10 @@ impl Engine {
             return Err(SdkError::Unsupported(url.to_string()));
         }
         if let Some(domain) = domain {
-            let patterns = domain.get_domain_registerable().matcher.match_patterns(url.as_str());
+            let patterns = domain
+                .get_domain_registerable()
+                .matcher
+                .match_patterns(url.as_str());
             tracing::debug!("patterns: {:?}", patterns);
 
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
@@ -195,8 +198,9 @@ impl Engine {
                                 url_param_closure.as_str(),
                                 pattern,
                                 domain_key_closure.to_string(),
-                                registry
-                            ).await?;
+                                registry,
+                            )
+                            .await?;
 
                             Ok(())
                         }
@@ -374,7 +378,6 @@ async fn scrap_provided_uri_and_persist(
     domain_key: String,
     registry: &Registerable,
 ) -> Result<(), SdkError> {
-
     let mut image_url = pattern.resource_string.as_ref().unwrap().clone();
     // any filtering?
     if let Some(url_filter) = registry.url_filter.as_ref() {
@@ -400,9 +403,13 @@ async fn scrap_provided_uri_and_persist(
     let image_bytes = download_resource(image_url.clone(), user_agent.clone())
         .await
         .map_err(|e| SdkError::NotFound(e.to_string()));
-    
+
     if let Err(e) = image_bytes {
-        tracing::warn!("{} -> error downloading the image: {}", domain_key, e.to_string());
+        tracing::warn!(
+            "{} -> error downloading the image: {}",
+            domain_key,
+            e.to_string()
+        );
         return Ok(());
     }
     let image_bytes = image_bytes.unwrap();
@@ -421,14 +428,18 @@ async fn scrap_provided_uri_and_persist(
             }
         }
         None => {
-            tracing::debug!(
-                "utilizing default storage policy to persist the resource..."
-            );
+            tracing::debug!("utilizing default storage policy to persist the resource...");
             let file_path = generate_file_path_to_persist(
                 root_folder.clone(),
                 src_url,
-                pattern.additoinal_params.as_ref().and_then(|params| params.get("chapter_id").cloned()),
-                pattern.additoinal_params.as_ref().and_then(|params| params.get("filepath").cloned()),
+                pattern
+                    .additoinal_params
+                    .as_ref()
+                    .and_then(|params| params.get("chapter_id").cloned()),
+                pattern
+                    .additoinal_params
+                    .as_ref()
+                    .and_then(|params| params.get("filepath").cloned()),
             );
             tracing::debug!("** file_path to persist the image: {}", file_path);
 

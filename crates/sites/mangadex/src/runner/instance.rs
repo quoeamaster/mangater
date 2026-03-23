@@ -97,8 +97,8 @@ impl Matcher for MangadexInstance {
                 pattern_type: PatternType::ActualUri,
                 resource_string: Some(u.clone()),
                 additoinal_params: Some(HashMap::from([
-                    ("chapter_id".to_string(), chapter_id.clone(),), 
-                    ("filepath".to_string(), u.clone())
+                    ("chapter_id".to_string(), chapter_id.clone()),
+                    ("filepath".to_string(), u.clone()),
                 ])),
             })
             .collect()

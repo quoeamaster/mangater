@@ -1,7 +1,6 @@
 use crate::runner::model::AtHomeResponse;
 use mangater_sdk::SdkError;
 
-use serde_json;
 use tokio::runtime::{Handle, Runtime};
 
 pub fn block_on_async<F, T>(future: F) -> T
