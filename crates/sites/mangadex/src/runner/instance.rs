@@ -75,7 +75,7 @@ impl Matcher for MangadexInstance {
             Some(id) => id,
             None => return vec![],
         };
-        tracing::info!("{} ->chapter id: {}", url, chapter_id);
+        tracing::debug!("{} ->chapter id: {}", url, chapter_id);
 
         let image_urls = block_on_async(async {
             match fetch_image_urls(&chapter_id).await {
@@ -95,11 +95,11 @@ impl Matcher for MangadexInstance {
             .map(|u| PatternMatchResult {
                 pattern: "user_agent:curl/7.88.1".to_string(),
                 pattern_type: PatternType::ActualUri,
-                resource_string: Some(u),
-                additoinal_params: Some(HashMap::from([(
-                    "chapter_id".to_string(),
-                    chapter_id.clone(),
-                )])),
+                resource_string: Some(u.clone()),
+                additoinal_params: Some(HashMap::from([
+                    ("chapter_id".to_string(), chapter_id.clone(),), 
+                    ("filepath".to_string(), u.clone())
+                ])),
             })
             .collect()
     }

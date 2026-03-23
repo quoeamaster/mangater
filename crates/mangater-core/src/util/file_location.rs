@@ -30,6 +30,7 @@ pub fn generate_file_path_to_persist(
     root_folder_path: String,
     url: &str,
     chapter: Option<String>,
+    filepath: Option<String>,
 ) -> String {
     // {config.core.storage.root_folder}/{last-part-of-url}/[chapter]/{source_filename}
 
@@ -40,7 +41,18 @@ pub fn generate_file_path_to_persist(
 
     let url_path_segments: Vec<_> = url_parts.path_segments().unwrap().collect();
     let last_part_of_url: String;
-    let mut source_file_name: String;
+    let mut source_file_name: String = "".to_string();
+
+    // does the filepath provided?
+    if let Some(filepath) = filepath {
+        // extract only the last segment
+        let filepath_parts: Vec<_> = filepath.split('/').collect();
+        if filepath_parts.len() > 0 {
+            source_file_name = filepath_parts[filepath_parts.len() - 1].to_string();
+        } else {
+            source_file_name = "".to_string();
+        }
+    }
 
     tracing::debug!(
         "url parts length {} and actual content: {:?}",
@@ -51,26 +63,30 @@ pub fn generate_file_path_to_persist(
     if url_path_segments.len() > 2 {
         // At least 3 segments (ignoring the domain)
         last_part_of_url = url_path_segments[url_path_segments.len() - 2].to_string();
-        source_file_name = url_path_segments[url_path_segments.len() - 1].to_string();
+        if source_file_name.is_empty() {
+            source_file_name = url_path_segments[url_path_segments.len() - 1].to_string();
+        }
     } else {
-        tracing::warn!(
+        tracing::debug!(
             "url {} - does not have enough segments to generate the file path, it might not be an error, but definitely not the best scenario",
             url
         );
         if url_path_segments.len() == 2 {
             // Only 2 segments
             last_part_of_url = url_path_segments[0].to_string();
-            source_file_name = url_path_segments[1].to_string();
+            if source_file_name.is_empty() {
+                source_file_name = url_path_segments[1].to_string();
+            }
         } else if url_path_segments.len() == 1 {
             last_part_of_url = "".to_string();
-            source_file_name = url_path_segments[0].to_string();
-
             if source_file_name.is_empty() {
-                source_file_name = "default_file".to_string();
+                source_file_name = url_path_segments[0].to_string();
             }
         } else {
             last_part_of_url = "".to_string();
-            source_file_name = "default_file".to_string();
+            if source_file_name.is_empty() {
+                source_file_name = "default_file".to_string();
+            }
         }
     }
 
@@ -207,6 +223,7 @@ mod tests {
                 test_case.root_folder_path,
                 &test_case.url,
                 test_case.chapter,
+                None,
             );
             tracing::debug!(
                 "file path generated from source url {} -> {}",

@@ -101,7 +101,7 @@ impl Engine {
         }
         if let Some(domain) = domain {
             let patterns = domain.get_domain_registerable().matcher.match_patterns(url.as_str());
-            tracing::info!("patterns: {:?}", patterns);
+            tracing::debug!("patterns: {:?}", patterns);
 
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
             if let Some(output_folder) = output_folder {
@@ -257,7 +257,7 @@ async fn scrap_and_persist_content(
         }
         None => {
             tracing::debug!("using default storage policy to persist the html content...");
-            let file_path = generate_file_path_to_persist(root_folder.clone(), url, None);
+            let file_path = generate_file_path_to_persist(root_folder.clone(), url, None, None);
             create_parent_folders_if_needed(file_path.clone())?;
             tracing::debug!("** file_path to persist the content: {}", file_path);
 
@@ -345,6 +345,7 @@ async fn scrap_and_persist_resource(
                             root_folder.clone(),
                             image_src_url.clone().as_str(),
                             None,
+                            None,
                         );
                         tracing::debug!("** file_path to persist the image: {}", file_path);
 
@@ -394,7 +395,7 @@ async fn scrap_provided_uri_and_persist(
     if !pattern.pattern.is_empty() {
         user_agent = Some(pattern.pattern.clone());
     }
-    tracing::info!("{} -> user_agent to be used: {:?}", domain_key, user_agent);
+    tracing::debug!("{} -> user_agent to be used: {:?}", domain_key, user_agent);
 
     let image_bytes = download_resource(image_url.clone(), user_agent.clone())
         .await
@@ -427,8 +428,9 @@ async fn scrap_provided_uri_and_persist(
                 root_folder.clone(),
                 src_url,
                 pattern.additoinal_params.as_ref().and_then(|params| params.get("chapter_id").cloned()),
+                pattern.additoinal_params.as_ref().and_then(|params| params.get("filepath").cloned()),
             );
-            tracing::info!("** file_path to persist the image: {}", file_path);
+            tracing::debug!("** file_path to persist the image: {}", file_path);
 
             download_resource_to_file(image_url.clone(), user_agent, file_path).await?;
         }

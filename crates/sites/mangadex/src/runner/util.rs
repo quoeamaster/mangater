@@ -8,9 +8,13 @@ pub fn block_on_async<F, T>(future: F) -> T
 where
     F: std::future::Future<Output = T>,
 {
-    // Case 1: already inside Tokio runtime
-    if let Ok(handle) = Handle::try_current() {
-        handle.block_on(future)
+    // Case 1: already inside Tokio runtime — can't block the current async worker thread.
+    // Use block_in_place to move to a blocking thread, then create a nested runtime there.
+    if Handle::try_current().is_ok() {
+        tokio::task::block_in_place(|| {
+            let rt = Runtime::new().expect("Failed to create Tokio runtime");
+            rt.block_on(future)
+        })
     } else {
         // Case 2: no runtime → create one
         let rt = Runtime::new().expect("Failed to create Tokio runtime");
@@ -35,7 +39,7 @@ pub async fn fetch_image_urls(chapter_id: &str) -> Result<Vec<String>, SdkError>
         .map_err(|e| SdkError::Network(e.to_string()))?;
 
     let url = format!("https://api.mangadex.org/at-home/server/{}", chapter_id);
-    tracing::info!("api url: {}", url);
+    tracing::debug!("api url: {}", url);
 
     let resp = client
         .get(&url)
@@ -64,7 +68,7 @@ pub async fn fetch_image_urls(chapter_id: &str) -> Result<Vec<String>, SdkError>
         })
         .collect();
 
-    tracing::info!("{} -> final image urls: {:?}", url, urls);
+    tracing::debug!("{} -> final image urls: {:?}", url, urls);
     Ok(urls)
 }
 
