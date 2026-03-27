@@ -1,0 +1,20 @@
+[package]
+name = "nasa-search"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "nasa api search implementation for Mangater"
+
+[dependencies]
+mangater-sdk = { path = "../../mangater-sdk" }
+
+reqwest = { version = "0.13.2", features = [ "json", "rustls" ] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros"] }
+once_cell = "1.21.3"
+regex = "1.12.3"
+tracing = "0.1.44"
+
+[dev-dependencies]
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "fmt"] }

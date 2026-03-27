@@ -1023,6 +1023,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "nasa-search"
+version = "0.1.0"
+dependencies = [
+ "mangater-sdk",
+ "once_cell",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "new_debug_unreachable"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"

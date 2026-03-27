@@ -1,26 +1,6 @@
 use crate::runner::model::AtHomeResponse;
 use mangater_sdk::SdkError;
 
-use tokio::runtime::{Handle, Runtime};
-
-pub fn block_on_async<F, T>(future: F) -> T
-where
-    F: std::future::Future<Output = T>,
-{
-    // Case 1: already inside Tokio runtime — can't block the current async worker thread.
-    // Use block_in_place to move to a blocking thread, then create a nested runtime there.
-    if Handle::try_current().is_ok() {
-        tokio::task::block_in_place(|| {
-            let rt = Runtime::new().expect("Failed to create Tokio runtime");
-            rt.block_on(future)
-        })
-    } else {
-        // Case 2: no runtime → create one
-        let rt = Runtime::new().expect("Failed to create Tokio runtime");
-        rt.block_on(future)
-    }
-}
-
 pub fn extract_chapter_id_from_url(url: &str) -> Option<String> {
     url.split("/chapter/")
         .nth(1)?
@@ -30,6 +10,7 @@ pub fn extract_chapter_id_from_url(url: &str) -> Option<String> {
 }
 
 pub async fn fetch_image_urls(chapter_id: &str) -> Result<Vec<String>, SdkError> {
+    // [todo] use mangater-sdk::util::resource::download_resource to fetch the image urls INSTEAD????
     // pretend to be curl to avoid being blocked by the server
     let client = reqwest::Client::builder()
         .user_agent("curl/7.88.1")

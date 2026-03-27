@@ -1,7 +1,8 @@
-use crate::runner::util::{block_on_async, extract_chapter_id_from_url, fetch_image_urls};
+use crate::runner::util::{extract_chapter_id_from_url, fetch_image_urls};
 
 use mangater_sdk::entity::{PatternMatchResult, PatternType, PluginContext, Registerable};
 use mangater_sdk::traits::{Domain, Matcher};
+use mangater_sdk::util::async_util::block_on_async;
 use mangater_sdk::SdkError;
 
 use once_cell::sync::Lazy;
