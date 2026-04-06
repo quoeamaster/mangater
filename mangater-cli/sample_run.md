@@ -9,3 +9,7 @@ cargo run -- scrap --url https://mangadex.org/chapter/5dec8fbf-243e-4c49-9213-11
 
 ## sample output on the params HashMap
 # 2026-03-23T04:44:07.597225Z  INFO crates/mangater-core/src/orchestration/engine.rs:109: params: {"site": "mangadex", "title": "kinnikuman new"}
+
+# nasa-search example
+cargo run scrap -c ./testdata/config-local.json5 -l info -u "https://images-api.nasa.gov/search?q=mars rover" --param q="mars rover" --param rows=3 -o testdata/scrap-local-content
+

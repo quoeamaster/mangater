@@ -7,6 +7,8 @@ use mangater_sdk::SdkError;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::sync::Arc;
+//use urlencoding::encode;
+use std::collections::HashMap;
 
 use crate::runner::model::{NasaApiResponse, NasaItem};
 
@@ -14,9 +16,10 @@ use crate::runner::model::{NasaApiResponse, NasaItem};
 /// eg. https://images-api.nasa.gov/search?q=mars&media_type=image
 static NASA_SEARCH_REGEX: Lazy<Regex> =
     // r"^https://images-api\.nasa\.gov/search\?q=(.*)$"
-    Lazy::new(|| Regex::new(r"^https://images-api\.nasa\.gov/(.*)$").unwrap());
+    // r"^https://images-api\.nasa\.gov/(.*)$"
+    Lazy::new(|| Regex::new(r"^https://images-api\.nasa\.gov/search\?q=(.*)$").unwrap());
 
-static NASA_SEARCH_DOMAIN_KEY: Lazy<String> = Lazy::new(|| "nasa-sarch".to_string());
+static NASA_SEARCH_DOMAIN_KEY: Lazy<String> = Lazy::new(|| "nasa-search".to_string());
 
 #[derive(Clone, Debug)]
 pub struct NasaSearchInstance {
@@ -58,29 +61,28 @@ impl Domain for NasaSearchInstance {
 }
 
 // [obsolete] const NASA_SEARCH_URL_IMAGE_PREFIX: &str = "https://images-api.nasa.gov/search?media_type=image";
-const NASA_SEARCH_URL_IMAGE_PREFIX_WITH_Q: &str =
-    "https://images-api.nasa.gov/search?media_type=image&q={q}";
+// const NASA_SEARCH_URL_IMAGE_PREFIX_WITH_Q: &str =
+//     "https://images-api.nasa.gov/search?media_type=image&q={q}";
 const DEFAULT_ROWS: &str = "10";
 
 impl Matcher for NasaSearchInstance {
-    fn match_patterns(
-        &self,
-        _url: &str,
-        context: Option<PluginContext>,
-    ) -> Vec<PatternMatchResult> {
+    fn match_patterns(&self, url: &str, context: Option<PluginContext>) -> Vec<PatternMatchResult> {
         // context must have "q"
         // context might hve "rows", defaul to 10 if not provided
-        let q = context
-            .as_ref()
-            .unwrap()
-            .params
-            .get("q")
-            .cloned()
-            .unwrap_or_default();
-        if q.is_empty() {
-            tracing::warn!("q is empty - actually it is a MANDATORY param, return with empty vec![] and not crashing the program...");
-            return vec![];
-        }
+
+        // [lesson] used to extract the q from the context, but now it is in the url itself
+        // let q = context
+        //     .as_ref()
+        //     .unwrap()
+        //     .params
+        //     .get("q")
+        //     .cloned()
+        //     .unwrap_or_default();
+        // if q.is_empty() {
+        //     tracing::warn!("q is empty - actually it is a MANDATORY param, return with empty vec![] and not crashing the program...");
+        //     return vec![];
+        // }
+
         let rows_in_string = context
             .as_ref()
             .unwrap()
@@ -91,11 +93,13 @@ impl Matcher for NasaSearchInstance {
 
         // call the query api (NASA_SEARCH_URL_IMAGE_PREFIX)
         let response = block_on_async(async {
-            download_resource(
-                NASA_SEARCH_URL_IMAGE_PREFIX_WITH_Q.replace("{q}", q.as_str()),
-                None,
-            )
-            .await
+            // let encoded_q = encode(q.as_str());
+            // let uri =
+            //     NASA_SEARCH_URL_IMAGE_PREFIX_WITH_Q.replace("{q}", encoded_q.to_string().as_str());
+            // tracing::info!("to be downloaded uri: {}, original uri: {}, actual q: {}", uri, NASA_SEARCH_URL_IMAGE_PREFIX_WITH_Q, encoded_q);
+
+            tracing::debug!("to be downloaded url: {}", url);
+            download_resource(url.to_string(), None).await
         });
         if let Err(e) = response {
             tracing::warn!(
@@ -131,9 +135,10 @@ impl Matcher for NasaSearchInstance {
                 pattern: "".to_string(),
                 pattern_type: PatternType::ActualUri,
                 resource_string: Some(image.clone()),
-                additoinal_params: None,
+                additoinal_params: Some(HashMap::from([("filepath".to_string(), image.clone())])),
             });
         }
+        tracing::debug!("nasa-search results (~large.jpg): {:?}", results);
         results
     }
 }

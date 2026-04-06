@@ -34,17 +34,19 @@ pub fn generate_file_path_to_persist(
     filepath: Option<String>,
 ) -> String {
     // {config.core.storage.root_folder}/{last-part-of-url}/[chapter]/{source_filename}
-
     tracing::debug!("generating file path to persist for url: {}", url);
 
     let url_parts = Url::parse(url).ok().unwrap();
     let domain_key = url_parts.domain().unwrap().to_string();
+    tracing::debug!("domain key: {}", domain_key);
 
     let url_path_segments: Vec<_> = url_parts.path_segments().unwrap().collect();
     let last_part_of_url: String;
     let mut source_file_name: String = "".to_string();
+    tracing::debug!("url path segments: {:?}", url_path_segments);
 
     // does the filepath provided?
+    // [lesson] IMPORTANT: for actual-uri pattern, the filepath is provided in the additoinal_params (so that the actual file name is available)
     if let Some(filepath) = filepath {
         // extract only the last segment
         let filepath_parts: Vec<_> = filepath.split('/').collect();

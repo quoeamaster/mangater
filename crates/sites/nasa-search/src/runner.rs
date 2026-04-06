@@ -1,4 +1,2 @@
-mod instance;
-mod model;
-
-pub use instance::NasaSearchInstance;
+pub mod instance;
+pub mod model;

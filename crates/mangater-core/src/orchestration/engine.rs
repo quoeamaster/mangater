@@ -115,7 +115,7 @@ impl Engine {
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
             if let Some(output_folder) = output_folder {
                 self.config.as_mut().unwrap().core.storage.root_folder = output_folder.clone();
-                tracing::info!("** output folder overridden: {}", output_folder);
+                tracing::debug!("** output folder overridden: {}", output_folder);
             }
 
             // check the patterns and check if need to scrap OR the content already ready for storage...
@@ -397,7 +397,9 @@ async fn scrap_provided_uri_and_persist(
         image_url = url_rewriter.rewrite_url(&image_url);
     }
     // generate url (if necessary)
+    tracing::debug!("src_url: {}, image_url: {}", src_url, image_url);
     image_url = generate_url_for_fetching(src_url, &image_url);
+    tracing::debug!("generated image_url: {}", image_url);
 
     // download the resource
     let mut user_agent: Option<String> = None;

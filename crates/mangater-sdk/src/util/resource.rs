@@ -14,6 +14,7 @@ pub async fn download_resource(
         .user_agent(user_agent)
         .build()
         .map_err(|e| SdkError::Network(e.to_string()))?;
+    tracing::debug!("downloading resource: {}", uri);
 
     let response = client
         .get(uri)
@@ -23,12 +24,17 @@ pub async fn download_resource(
         .error_for_status()
         .map_err(|e| SdkError::Network(e.to_string()))?;
 
+    // [original]
+    // let body = response
+    //     .text()
+    //     .await
+    //     .map_err(|e| SdkError::Network(e.to_string()))?;
     let body = response
-        .text()
+        .bytes()
         .await
         .map_err(|e| SdkError::Network(e.to_string()))?;
 
-    Ok(body.as_bytes().to_vec())
+    Ok(body.to_vec())
 }
 
 pub fn create_parent_folders_if_needed(file_path: String) -> Result<(), SdkError> {

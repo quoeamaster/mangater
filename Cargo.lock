@@ -936,6 +936,7 @@ dependencies = [
  "serde",
  "serde_json",
  "site-mangadex",
+ "site-nasa-search",
  "site-wikipedia",
  "tokio",
  "tracing",
@@ -1020,21 +1021,6 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "nasa-search"
-version = "0.1.0"
-dependencies = [
- "mangater-sdk",
- "once_cell",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -1650,6 +1636,21 @@ checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
 
 [[package]]
 name = "site-mangadex"
+version = "0.1.0"
+dependencies = [
+ "mangater-sdk",
+ "once_cell",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "site-nasa-search"
 version = "0.1.0"
 dependencies = [
  "mangater-sdk",

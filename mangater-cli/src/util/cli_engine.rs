@@ -50,5 +50,17 @@ pub fn build_engine(
             .add_to_registry(Some(mangadex.get_domain_key()), Arc::new(mangadex.clone()));
     }
 
+    // *** nasa(-search) plugin registration ***
+    #[cfg(feature = "nasa")]
+    {
+        use mangater_sdk::traits::Domain;
+        use site_nasa_search::NasaSearchInstance;
+
+        let nasa_search = NasaSearchInstance::new();
+        engine.registry().add_to_registry(
+            Some(nasa_search.get_domain_key()),
+            Arc::new(nasa_search.clone()),
+        );
+    }
     engine
 }
