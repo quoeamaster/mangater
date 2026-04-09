@@ -108,7 +108,7 @@ impl Engine {
                 .get_domain_registerable()
                 .matcher
                 .match_patterns(url.as_str(), Some(&mut plugin_context));
-            tracing::info!("plugin_context: {:?}", plugin_context);
+            tracing::debug!("plugin_context: {:?}", plugin_context);
             tracing::debug!("patterns: {:?}", patterns);
 
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
@@ -152,6 +152,7 @@ impl Engine {
             .unwrap_or(&"false".to_string())
             == "true"
         {
+            tracing::info!("scraping the content of the url: {} -> domain key: {}", url, domain_key);
             url_content_bytes = download_resource(url.clone(), None)
                 .await
                 .map_err(|e| SdkError::NotFound(e.to_string()))?;
