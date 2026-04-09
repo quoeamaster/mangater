@@ -103,12 +103,11 @@ impl Engine {
             return Err(SdkError::Unsupported(url.to_string()));
         }
         if let Some(domain) = domain {
-            let patterns = domain.get_domain_registerable().matcher.match_patterns(
-                url.as_str(),
-                Some(PluginContext {
-                    params: params.clone(),
-                }),
-            );
+            let params_cloned = params.clone();
+            let patterns = domain
+                .get_domain_registerable()
+                .matcher
+                .match_patterns(url.as_str(), Some(PluginContext::new(params_cloned)));
             tracing::debug!("params: {:?}", params);
             tracing::debug!("patterns: {:?}", patterns);
 

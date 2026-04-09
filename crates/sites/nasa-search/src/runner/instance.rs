@@ -82,17 +82,16 @@ impl Matcher for NasaSearchInstance {
         //     tracing::warn!("q is empty - actually it is a MANDATORY param, return with empty vec![] and not crashing the program...");
         //     return vec![];
         // }
-
         let rows_in_string = context
             .as_ref()
             .unwrap()
-            .params
             .get("rows")
             .cloned()
             .unwrap_or(DEFAULT_ROWS.to_string());
 
         // call the query api (NASA_SEARCH_URL_IMAGE_PREFIX)
         let response = block_on_async(async {
+            // [obsolete]
             // let encoded_q = encode(q.as_str());
             // let uri =
             //     NASA_SEARCH_URL_IMAGE_PREFIX_WITH_Q.replace("{q}", encoded_q.to_string().as_str());
@@ -188,10 +187,10 @@ mod tests {
         init_tracing();
 
         let nasa = NasaSearchInstance::new();
-        let context = PluginContext {
-            // additional cli param(s)
-            params: std::collections::HashMap::from([("q".to_string(), "mars".to_string())]),
-        };
+        let context = PluginContext::new(std::collections::HashMap::from([(
+            "q".to_string(),
+            "mars".to_string(),
+        )]));
         let results = nasa.match_patterns("never_use_could_be_any_value", Some(context));
         tracing::debug!("results: {:?}", results);
         assert!(!results.is_empty());

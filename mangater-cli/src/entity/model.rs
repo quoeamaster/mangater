@@ -51,6 +51,7 @@ pub struct ScrapArgs {
     /// Plugin-specific parameters (key=value), repeatable
     /// Example: --param q=mars --param rows=5 --param scrap_url=true
     #[arg(long = "param", value_parser = parse_key_val_str)]
+    // [todo] make it mut...
     pub params: Vec<(String, String)>,
 }
 
@@ -74,8 +75,15 @@ impl ScrapArgs {
     /// assert_eq!(map.get("q"), Some(&"mars".to_string()));
     /// assert_eq!(map.get("limit"), Some(&"5".to_string()));
     /// ```
-    pub fn params_map(&self) -> std::collections::HashMap<String, String> {
-        self.params.iter().cloned().collect()
+    pub fn params_map(self) -> std::collections::HashMap<String, String> {
+        // [lesson]
+        // updated the fn signature to self from &self
+        // aim: reduce using clone()...
+
+        // [obsolete]
+        //self.params.iter().cloned().collect()
+
+        self.params.into_iter().collect()
     }
 }
 

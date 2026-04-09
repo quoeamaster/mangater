@@ -16,7 +16,8 @@ pub async fn scrap(
         .run_scrap_workflow(
             args.clone().url,
             args.clone().output,
-            args.clone().params_map().clone(),
+            //args.clone().params_map().clone(),
+            args.params_map(),
         )
         .await
     {

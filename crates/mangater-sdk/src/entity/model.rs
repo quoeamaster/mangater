@@ -147,5 +147,21 @@ pub struct StorageConfig {
 /// These parameters can be used to guide plugin behavior depending on the specific use case.
 #[derive(Clone, Debug, Default)]
 pub struct PluginContext {
-    pub params: HashMap<String, String>,
+    params: HashMap<String, String>,
+}
+
+impl PluginContext {
+    pub fn new(params: HashMap<String, String>) -> Self {
+        Self { params }
+    }
+
+    // read
+    pub fn get(&self, key: &str) -> Option<&String> {
+        self.params.get(key)
+    }
+
+    // write
+    pub fn insert(&mut self, key: String, value: String) {
+        self.params.insert(key, value);
+    }
 }
