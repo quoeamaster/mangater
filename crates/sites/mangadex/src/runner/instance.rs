@@ -72,7 +72,7 @@ impl Matcher for MangadexInstance {
     fn match_patterns(
         &self,
         url: &str,
-        _context: Option<PluginContext>,
+        _context: Option<&mut PluginContext>,
     ) -> Vec<PatternMatchResult> {
         // get chapter id from the url
         let chapter_id = match extract_chapter_id_from_url(url) {

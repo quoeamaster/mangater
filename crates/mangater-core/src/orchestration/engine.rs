@@ -103,12 +103,12 @@ impl Engine {
             return Err(SdkError::Unsupported(url.to_string()));
         }
         if let Some(domain) = domain {
-            let params_cloned = params.clone();
+            let mut plugin_context = PluginContext::new(params.clone());
             let patterns = domain
                 .get_domain_registerable()
                 .matcher
-                .match_patterns(url.as_str(), Some(PluginContext::new(params_cloned)));
-            tracing::debug!("params: {:?}", params);
+                .match_patterns(url.as_str(), Some(&mut plugin_context));
+            tracing::info!("plugin_context: {:?}", plugin_context);
             tracing::debug!("patterns: {:?}", patterns);
 
             // in case the output folder is provided, override the config file's `core.storage.root_folder` value
@@ -124,6 +124,7 @@ impl Engine {
                 domain_key,
                 &patterns,
                 &domain.get_domain_registerable(),
+                &plugin_context,
             )
             .await?;
         }
@@ -136,23 +137,33 @@ impl Engine {
         domain_key: String,
         patterns: &Vec<PatternMatchResult>,
         registry: &Registerable,
+        plugin_context: &PluginContext,
     ) -> Result<(), SdkError> {
         // scrapping non existed resources won't end up an error but a logging (warn level)
         // on the other hand, persisting having issues ends up a SdkError
 
         // get the content of the url... first
-        let url_content = download_resource(url.clone(), None)
-            .await
-            .map_err(|e| SdkError::NotFound(e.to_string()))?;
+        let url_content_bytes: Vec<u8>;
+        let mut url_content: String = String::new();
 
-        let url_content = String::from_utf8(url_content).map_err(|e| {
-            SdkError::Parse(format!(
-                "{} contents could not be parsed into string -> {}",
-                url.clone(),
-                e
-            ))
-        })?;
+        // do you need to scrap the content? (check param `scrap_content` == true)
+        if plugin_context
+            .get("scrap_content")
+            .unwrap_or(&"false".to_string())
+            == "true"
+        {
+            url_content_bytes = download_resource(url.clone(), None)
+                .await
+                .map_err(|e| SdkError::NotFound(e.to_string()))?;
 
+            url_content = String::from_utf8(url_content_bytes).map_err(|e| {
+                SdkError::Parse(format!(
+                    "{} contents could not be parsed into string -> {}",
+                    url.clone(),
+                    e
+                ))
+            })?;
+        }
         let url_content = Arc::new(url_content);
         let url_param = Arc::new(url.clone());
         let domain_key_arc = Arc::new(domain_key.clone());
@@ -493,7 +504,7 @@ mod tests {
             fn match_patterns(
                 &self,
                 _url: &str,
-                _context: Option<PluginContext>,
+                _context: Option<&mut PluginContext>,
             ) -> Vec<PatternMatchResult> {
                 vec![PatternMatchResult {
                     pattern: "img".to_string(),

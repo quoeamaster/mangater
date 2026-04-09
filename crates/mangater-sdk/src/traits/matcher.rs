@@ -32,5 +32,9 @@ use crate::entity::PluginContext;
 /// such as a web page. Implementors should provide logic that takes a list of patterns (with associated types),
 /// searches for matches according to their own matching logic, and returns the results as a collection of `PatternMatchResult`.
 pub trait Matcher: Send + Sync {
-    fn match_patterns(&self, url: &str, context: Option<PluginContext>) -> Vec<PatternMatchResult>;
+    fn match_patterns(
+        &self,
+        url: &str,
+        context: Option<&mut PluginContext>,
+    ) -> Vec<PatternMatchResult>;
 }

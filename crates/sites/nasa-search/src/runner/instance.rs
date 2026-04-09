@@ -66,7 +66,11 @@ impl Domain for NasaSearchInstance {
 const DEFAULT_ROWS: &str = "10";
 
 impl Matcher for NasaSearchInstance {
-    fn match_patterns(&self, url: &str, context: Option<PluginContext>) -> Vec<PatternMatchResult> {
+    fn match_patterns(
+        &self,
+        url: &str,
+        context: Option<&mut PluginContext>,
+    ) -> Vec<PatternMatchResult> {
         // context must have "q"
         // context might hve "rows", defaul to 10 if not provided
 
@@ -88,6 +92,9 @@ impl Matcher for NasaSearchInstance {
             .get("rows")
             .cloned()
             .unwrap_or(DEFAULT_ROWS.to_string());
+
+        // [todo] test on updating the params
+        //context.unwrap().insert("domain_key".to_string(), self.domain_key.clone());
 
         // call the query api (NASA_SEARCH_URL_IMAGE_PREFIX)
         let response = block_on_async(async {
@@ -187,11 +194,11 @@ mod tests {
         init_tracing();
 
         let nasa = NasaSearchInstance::new();
-        let context = PluginContext::new(std::collections::HashMap::from([(
+        let mut context = PluginContext::new(std::collections::HashMap::from([(
             "q".to_string(),
             "mars".to_string(),
         )]));
-        let results = nasa.match_patterns("never_use_could_be_any_value", Some(context));
+        let results = nasa.match_patterns("never_use_could_be_any_value", Some(&mut context));
         tracing::debug!("results: {:?}", results);
         assert!(!results.is_empty());
         assert!(results.len() > 0);

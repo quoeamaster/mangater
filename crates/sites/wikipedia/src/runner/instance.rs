@@ -82,9 +82,14 @@ impl Matcher for WikipediaInstance {
     fn match_patterns(
         &self,
         _url: &str,
-        _context: Option<PluginContext>,
+        context: Option<&mut PluginContext>,
     ) -> Vec<PatternMatchResult> {
         let mut results = Vec::new();
+
+        // update the scrap_content param (as required to download the source content for further image scrap)
+        context
+            .unwrap()
+            .insert("scrap_content".to_string(), "true".to_string());
 
         // means scrap the images based on <img> tag
         results.push(PatternMatchResult {
