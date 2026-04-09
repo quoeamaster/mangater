@@ -119,6 +119,7 @@ impl Engine {
             }
 
             // check the patterns and check if need to scrap OR the content already ready for storage...
+            // [TODO] add back the param check scrap_url=true|false and decide scrapping the url or not before forwarding to the various scrap methods based on the PatternType
             self.scrap_and_persist(
                 url,
                 domain_key,
@@ -646,5 +647,83 @@ mod tests {
             "assume only 1 content file should be present, actual count: {}",
             content_files_cnt
         );
+    }
+
+
+    struct DummyStruct {
+        data: std::collections::HashMap<String, String>,
+    }
+    impl DummyStruct {
+        fn new() -> Self {
+            Self {
+                data: std::collections::HashMap::new(),
+            }
+        }
+
+        fn get(&self, key: &str) -> Option<&String> {
+            self.data.get(key)
+        }
+
+        fn set(&mut self, key: &str, value: String) {
+            self.data.insert(key.to_string(), value);
+        }
+    }
+
+    #[test]
+    #[ignore]
+    // test to show how struct and its HashMap works... (referenced)
+    fn test_mut_ref_update() {
+        init_tracing();
+
+        // init an instance
+        let mut dummy = DummyStruct::new();
+        dummy.set("key1", "value1".to_string());
+        dummy.set("key2", "value2".to_string());
+
+        // get the value
+        let value = dummy.get("key1");
+        assert_eq!(value, Some(&"value1".to_string()));
+
+        // update the value
+        dummy.set("key1", "value1_updated".to_string());
+
+        let value = dummy.get("key1");
+        assert_eq!(value, Some(&"value1_updated".to_string()));
+    }
+
+    #[test]
+    #[ignore]
+    // poc on how the struct and its HashMap works... (referenced and cloned)
+    // applying to PluginContext struct and its HashMap...
+    fn test_mut_ref_update_2() {
+        // [lesson] 
+        // the struct instance (PluginContext) must be "mut"
+        // in case the instance is cloned -> the value updated would be just the cloned instance and not affecting the original instance 
+        //  (this might be useful if you need to keep the original context instance's original value... 
+        //      re-usable - though not for CLI as usually a 1-off execution and will exit)
+        // the cloned instance should be kept as well... (if you need the updated value)
+        init_tracing();
+
+        let mut dummy = DummyStruct::new();
+        dummy.set("key1", "value1".to_string());
+        dummy.set("key2", "value2".to_string());
+
+        test_mut_ref_update_3(&mut dummy.data);
+
+        assert_eq!(dummy.get("key1"), Some(&"value1_updated".to_string()));
+        tracing::info!("dummy.data -> should be updated: {:?}", dummy.data);
+
+        // use a clone instead...
+        let mut data = dummy.data.clone();
+        data.insert("key1".to_string(), "value1_back_to_original".to_string());
+        data.insert("key2".to_string(), "value2_new_value".to_string());
+        test_mut_ref_update_3(&mut data);
+        assert_eq!(data.get("key1"), Some(&"value1_updated".to_string()));
+        tracing::info!("data (cloned) -> should be updated: {:?} vs dummy.data: {:?}", data, dummy.data);
+    }
+
+    fn test_mut_ref_update_3(data: &mut std::collections::HashMap<String, String>) {
+        tracing::info!("data -> to be updated ... ");
+        data.insert("key1".to_string(), "value1_updated".to_string());
     }
 }

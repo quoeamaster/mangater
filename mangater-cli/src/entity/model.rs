@@ -49,7 +49,7 @@ pub struct ScrapArgs {
     pub output: Option<String>,
 
     /// Plugin-specific parameters (key=value), repeatable
-    /// Example: --param q=mars --param limit=5
+    /// Example: --param q=mars --param rows=5 --param scrap_url=true
     #[arg(long = "param", value_parser = parse_key_val_str)]
     pub params: Vec<(String, String)>,
 }
