@@ -152,7 +152,11 @@ impl Engine {
             .unwrap_or(&"false".to_string())
             == "true"
         {
-            tracing::info!("scraping the content of the url: {} -> domain key: {}", url, domain_key);
+            tracing::info!(
+                "scraping the content of the url: {} -> domain key: {}",
+                url,
+                domain_key
+            );
             url_content_bytes = download_resource(url.clone(), None)
                 .await
                 .map_err(|e| SdkError::NotFound(e.to_string()))?;
