@@ -1,6 +1,40 @@
+// site-mangadex - the mangadex site implementation for Mangater.
+// Copyright (C) 2026 Takara-Mono <quoeamaster@gmail.com>
+//
+// For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
+//
+// The MIT License (MIT)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+//! runner/util.rs provides utilities for the mangadex site implementation.
+
 use crate::runner::model::AtHomeResponse;
 use mangater_sdk::SdkError;
 
+/// helper function to extract the chapter id from a given url.
+///
+/// # Arguments
+/// * `url`: The URL to extract the chapter id from.
+///
+/// # Returns
+/// * `Option<String>` the chapter id if it is found.
 pub fn extract_chapter_id_from_url(url: &str) -> Option<String> {
     url.split("/chapter/")
         .nth(1)?
@@ -9,6 +43,15 @@ pub fn extract_chapter_id_from_url(url: &str) -> Option<String> {
         .map(|s| s.to_string())
 }
 
+/// helper function to fetch the image urls from a given chapter id.
+/// Contains site specific logic on fetching images url (call api server).
+///
+/// # Arguments
+/// * `chapter_id`: The chapter id to fetch the image urls from.
+///
+/// # Returns
+/// * `Result<Vec<String>, SdkError>` the image urls if they are fetched successfully.
+/// * `Err(SdkError)` if the image urls cannot be fetched.
 pub async fn fetch_image_urls(chapter_id: &str) -> Result<Vec<String>, SdkError> {
     // [todo] use mangater-sdk::util::resource::download_resource to fetch the image urls INSTEAD????
     // pretend to be curl to avoid being blocked by the server

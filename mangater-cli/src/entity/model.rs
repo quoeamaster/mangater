@@ -47,7 +47,6 @@ fn parse_key_val_str(s: &str) -> Result<(String, String), String> {
     Ok((s[..pos].to_string(), s[pos + 1..].to_string()))
 }
 
-
 #[derive(clap::Args, Clone, Debug)]
 pub struct ScrapArgs {
     /// URL to scrape (mandatory)
