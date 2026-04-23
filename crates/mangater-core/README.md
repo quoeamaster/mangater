@@ -1,6 +1,6 @@
 # Core Engine for Mangater - the content scrapping and management machine
 
-core engine or orchestrator for linking up the sdk contracts to match, scrap and manage the resources.
+core engine or orchestrator for linking up the sdk contracts to match, scrap and manage the resources. For contributors, please also read the [contributor readme](README-contribution-concept.md).
 
 ## overall flow of orchestration
 
@@ -105,4 +105,3 @@ such examples could be:
 - config data stored in databases
 - config data stored in a midde tier technology such as [Redis](https://redis.io/) / [Elasticsearch](https://www.elastic.co/)
 - config data stored in [yaml](https://en.wikipedia.org/wiki/YAML) / [toml](https://toml.io/en/) (official support config file is json ONLY at this moment)
-
