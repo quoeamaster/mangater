@@ -1,3 +1,30 @@
+// mangater-core - the core utilities, several traits implementations for Mangater ecosystem.
+// Copyright (C) 2026 Takara-Mono <quoeamaster@gmail.com>
+//
+// For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
+//
+// The MIT License (MIT)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+//! orchestration/engine.rs provides the orchestration engine a backbone / flow.
+
 use crate::orchestration::model::RegistryMapImplementation;
 use crate::util::file_location::{generate_file_path_to_persist, generate_url_for_fetching};
 
@@ -17,6 +44,7 @@ use futures_util::StreamExt;
 use std::fs;
 use std::sync::Arc;
 
+/// Engine is the core orchestration flow controller of the Mangater ecosystem.
 pub struct Engine {
     registry: RegistryMapImplementation,
 
@@ -39,11 +67,12 @@ impl Engine {
         }
     }
 
-    /// return a read-only reference to the underlying registry implementation
+    /// return a mutable reference to the underlying registry implementation
     pub fn registry(&mut self) -> &mut dyn mangater_sdk::traits::Registry {
         &mut self.registry
     }
 
+    /// load the configuration from a json5 file
     pub fn config_load_from_json5_file(
         &mut self,
         config_file: String,
@@ -59,6 +88,7 @@ impl Engine {
         Ok(self.config.as_ref().unwrap())
     }
 
+    /// load the configuration from a json file
     pub fn config_load_from_json_file(
         &mut self,
         config_file: String,
@@ -74,6 +104,7 @@ impl Engine {
         Ok(self.config.as_ref().unwrap())
     }
 
+    /// helper function to get the maximum concurrency level from the configuration
     fn get_max_concurrency(&self) -> usize {
         match self.config.as_ref() {
             Some(config) => {
@@ -91,6 +122,15 @@ impl Engine {
 }
 
 impl Engine {
+    /// run the scrap workflow
+    ///
+    /// # Arguments
+    /// * `url`: The URL to scrape.
+    /// * `output_folder`: The output directory.
+    /// * `params`: The parameters for the scrap command. A vector of `(String, String)` tuple pairs.
+    ///
+    /// # Returns
+    /// - Returns a [anyhow::Result] indicating success or failure.
     pub async fn run_scrap_workflow(
         &mut self,
         url: String,
@@ -131,6 +171,17 @@ impl Engine {
         Ok(())
     }
 
+    /// actual logic for the heavy scrap and persist
+    ///
+    /// # Arguments
+    /// * `url`: The URL to scrape.
+    /// * `domain_key`: The domain key.
+    /// * `patterns`: The patterns to match.
+    /// * `registry`: The registry.
+    /// * `plugin_context`: The plugin context.
+    ///
+    /// # Returns
+    /// - Returns a [anyhow::Result] indicating success or failure.
     async fn scrap_and_persist(
         &self,
         url: String,
@@ -261,6 +312,17 @@ impl Engine {
     }
 }
 
+/// logic dedicated to PatternType::Content
+///
+/// # Arguments
+/// * `root_folder`: The root directory where the content should be stored.
+/// * `url_content`: The content of the url.
+/// * `url`: The url.
+/// * `pattern`: The pattern to match.
+/// * `registry`: The registry.
+///
+/// # Returns
+/// - Returns a [anyhow::Result] indicating success or failure.
 async fn scrap_and_persist_content(
     root_folder: String,
     url_content: &str,
@@ -393,6 +455,17 @@ async fn scrap_and_persist_resource(
     }
 }
 
+/// logic dedicated to PatternType::ActualUri
+///
+/// # Arguments
+/// * `root_folder`: The root directory where the content should be stored.
+/// * `src_url`: The source url.
+/// * `pattern`: The pattern to match.
+/// * `domain_key`: The domain key.
+/// * `registry`: The registry.
+///
+/// # Returns
+/// - Returns a [anyhow::Result] indicating success or failure.
 async fn scrap_provided_uri_and_persist(
     root_folder: String,
     src_url: &str,
