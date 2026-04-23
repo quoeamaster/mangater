@@ -76,10 +76,11 @@ mod tests {
         );
     }
     #[tokio::test]
+    #[ignore = "this test should be run for once as poc only"]
     async fn test_fetch_image_urls() {
         init_tracing();
 
-        let urls = fetch_image_urls("5dec8fbf-243e-4c49-9213-11771294792b")
+        let urls = fetch_image_urls("8a56a7c3-4dbf-4cc8-99db-5ff28033ff6e")
             .await
             .unwrap();
         assert!(!urls.is_empty());
