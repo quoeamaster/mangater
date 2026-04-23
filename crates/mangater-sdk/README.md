@@ -4,6 +4,8 @@ acting as the sdk / interface for mangater to work; this is the heart of the eco
 
 However, mangater is not a crawling engine, hence it would only serve to locate resources within a logic page or chapter. For most cases, it will not crawl out of the boundary.
 
+For contributors, please also read [contributor guide](README-contribution.md)
+
 ## possible layouts of websites containing the resources
 
 ### a. everything is on the landing page (e.g. gallery pages)

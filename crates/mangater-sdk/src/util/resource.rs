@@ -1,10 +1,48 @@
+// mangater-sdk - the sdk interface for Mangater, includes traits, models and utilities.
+// Copyright (C) 2026 Takara-Mono <quoeamaster@gmail.com>
+//
+// For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
+//
+// The MIT License (MIT)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+//! util/resource.rs provides utilities for downloading resources.
+
 use crate::errors::SdkError;
 use futures_util::StreamExt;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
+/// default user agent for the Mangater SDK
 const DEFAULT_USER_AGENT: &str = "mangater-sdk/0.1 (+https://github.com/quoeamaster/mangater)";
 
+/// helper function to download a resource from a given URI. Return the raw bytes of the resource.
+/// If you need to download a resource to a file, use [download_resource_to_file] instead.
+///
+/// # Arguments
+/// * `uri`: The URI of the resource to download.
+/// * `user_agent`: The user agent to use for the request.
+///
+/// # Returns
+/// * `Ok(Vec<u8>)` if the resource is downloaded successfully.
+/// * `Err(SdkError)` if the resource cannot be downloaded.
 pub async fn download_resource(
     uri: String,
     user_agent: Option<String>,
@@ -37,6 +75,14 @@ pub async fn download_resource(
     Ok(body.to_vec())
 }
 
+/// helper function to create parent folders if needed
+///
+/// # Arguments
+/// * `file_path`: The path to the file.
+///
+/// # Returns
+/// * `Ok(())` if the parent folders are created successfully.
+/// * `Err(SdkError)` if the parent folders cannot be created.
 pub fn create_parent_folders_if_needed(file_path: String) -> Result<(), SdkError> {
     let local_file_path = file_path.clone();
     let file_path = std::path::Path::new(&local_file_path);
@@ -47,6 +93,16 @@ pub fn create_parent_folders_if_needed(file_path: String) -> Result<(), SdkError
     Ok(())
 }
 
+/// helper function to download a resource to a file
+///
+/// # Arguments
+/// * `uri`: The URI of the resource to download.
+/// * `user_agent`: The user agent to use for the request.
+/// * `file_path`: The path to the file.
+///
+/// # Returns
+/// * `Ok(())` if the resource is downloaded to the file successfully.
+/// * `Err(SdkError)` if the resource cannot be downloaded to the file.
 pub async fn download_resource_to_file(
     uri: String,
     user_agent: Option<String>,

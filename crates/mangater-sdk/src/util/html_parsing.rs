@@ -1,7 +1,43 @@
+// mangater-sdk - the sdk interface for Mangater, includes traits, models and utilities.
+// Copyright (C) 2026 Takara-Mono <quoeamaster@gmail.com>
+//
+// For a copy of the MIT license, see <https://opensource.org/licenses/MIT>.
+//
+// The MIT License (MIT)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+//! util/html_parsing.rs provides utilities for parsing HTML content.
+
 use scraper::{node::Node, ElementRef, Html, Selector};
 
 use crate::entity::{HtmlImage, HtmlPlainTextAndImages};
 
+/// helper function to clean the HTML content
+///
+/// # Arguments
+/// * `content`: The HTML content to clean.
+/// * `selector_in_string`: The selector to use for the cleaning.
+///
+/// # Returns
+/// * `String` if the HTML content is cleaned successfully.
+/// * `Err(SdkError)` if the HTML content cannot be cleaned.
 pub fn clean_html_content(content: &str, selector_in_string: Option<String>) -> String {
     tracing::trace!("** html full content before cleaning: {}", content);
 
@@ -18,6 +54,14 @@ pub fn clean_html_content(content: &str, selector_in_string: Option<String>) -> 
     final_text
 }
 
+/// helper function to clean the text of the HTML content
+///
+/// # Arguments
+/// * `element`: The element to clean.
+///
+/// # Returns
+/// * `String` if the text is cleaned successfully.
+/// * `Err(SdkError)` if the text cannot be cleaned.
 fn clean_text(element: &ElementRef) -> String {
     let mut text = String::new();
 
