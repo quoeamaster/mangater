@@ -47,15 +47,7 @@ fn parse_key_val_str(s: &str) -> Result<(String, String), String> {
     Ok((s[..pos].to_string(), s[pos + 1..].to_string()))
 }
 
-/// ScrapArgs is a struct that contains the arguments for the scrap command.
-///
-/// # Parameters
-/// - `url`: The URL to scrape.
-/// - `output`: The output directory.
-/// - `params`: The parameters for the scrap command. A vector of `(String, String)` tuple pairs.
-///
-/// # Returns
-/// A tuple of `(String, String)` containing the key and value.
+
 #[derive(clap::Args, Clone, Debug)]
 pub struct ScrapArgs {
     /// URL to scrape (mandatory)

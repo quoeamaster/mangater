@@ -167,3 +167,50 @@ mangater-cli scrap --url "https://images-api.nasa.gov/search?q=mars" --param row
 
 - If a feature is not enabled at compile time, its plugin is not registered: `list-domains` will not list it, and `scrap` will not handle matching URLs.
 - This README is **draft** quality: URLs and behavior should be validated against the latest `mangater-cli` and site crates in your branch.
+
+---
+
+## usage example
+
+### 1a. get images on Wikipedia noSQL page
+```bash
+mangater-cli scrap --url "https://en.wikipedia.org/wiki/noSQL" 
+```
+
+### 1b. get images and html content (cleaned) on Wikipedia noSQL page
+```bash
+mangater-cli scrap --url "https://en.wikipedia.org/wiki/noSQL" 
+```
+and
+```json
+...
+"plugins": {
+    "wikipedia": {
+        "need_content": true
+    }
+}
+...
+```
+
+### 2. get a chapter of images from Mangadex
+```bash
+# additional param provided (as an example for future extensibility)
+# title=some-comics => key: title, value: some-comics
+# site=magadex => key: site, value: mangadex
+mangater-cli scrap \
+    --url https://mangadex.org/chapter/{chapter-id} \
+    --output {custom_output_location_to_save_images} \
+    --param 'title=some-comics' --param site=mangadex
+```
+
+### 3. get images from nasa 
+```bash
+# logging set to "info"
+# additional param to control how much images to get
+# rows=3 => only grab 3 images
+mangater-cli scrap \
+    -l info \
+    -u "https://images-api.nasa.gov/search?q={terms-to-be-queried}" \
+    --param site="nasa" --param rows=3
+```
+
