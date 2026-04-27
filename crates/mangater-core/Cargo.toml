@@ -19,7 +19,7 @@ path = "src/lib.rs"
 
 [dependencies]
 # internal dependency
-mangater-sdk = { path = "../mangater-sdk" }
+mangater-sdk = { version = "0.1.0", path = "../mangater-sdk" }
 
 async-trait = "0.1.89"
 thiserror = "2.0.18"
