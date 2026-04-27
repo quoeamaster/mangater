@@ -3,7 +3,15 @@ name = "mangater-core"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "Core domain and orchestration engine for Mangater"
+description = "Core engine for manga downloading, orchestration, and plugin execution"
+
+repository = "https://github.com/quoeamaster/mangater/tree/main/crates/mangater-core"
+homepage = "https://github.com/quoeamaster/mangater/tree/main/crates/mangater-core"
+documentation = "https://crates.io/crates/mangater-core"
+readme = "README.md"
+
+keywords = ["manga", "downloader", "engine", "async", "scraper"]
+categories = ["network-programming"]
 
 [lib]
 name = "mangater_core"

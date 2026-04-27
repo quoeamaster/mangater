@@ -43,4 +43,6 @@ report.features
 # testing related
 **/testdata/raw/*
 
+# publish.sh
+**/run_publish.sh
 
