@@ -167,7 +167,7 @@ impl UrlFilter for WikipediaInstance {
     /// example:
     /// ```
     /// use mangater_sdk::traits::UrlFilter;
-    /// use site_wikipedia::WikipediaInstance;
+    /// use mangater_sites_wikipedia::WikipediaInstance;
     ///
     /// let instance = WikipediaInstance::new();
     /// assert!(instance.filter_url("https://upload.wikimedia.org/wiki/Rust_(programming_language)/lang.png"));
@@ -189,7 +189,7 @@ impl UrlRewriter for WikipediaInstance {
     /// example:
     /// ```
     /// use mangater_sdk::traits::UrlRewriter;
-    /// use site_wikipedia::WikipediaInstance;
+    /// use mangater_sites_wikipedia::WikipediaInstance;
     ///
     /// let instance = WikipediaInstance::new();
     /// assert_eq!(instance.rewrite_url("https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Global_thinking.svg/20px-Global_thinking.svg.png"),

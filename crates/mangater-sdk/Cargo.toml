@@ -3,7 +3,15 @@ name = "mangater-sdk"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "SDK interface for Mangater"
+description = "SDK for building manga source plugins for Mangater (traits, types, and interfaces)"
+
+repository = "https://github.com/quoeamaster/mangater/tree/main/crates/mangater-sdk"
+homepage = "https://github.com/quoeamaster/mangater/tree/main/crates/mangater-sdk"
+documentation = "https://docs.rs/mangater-sdk"
+readme = "README.md"
+
+keywords = ["manga", "sdk", "plugin", "scraper", "async"]
+categories = ["api-bindings", "network-programming"]
 
 [dependencies]
 async-trait = "0.1.89"

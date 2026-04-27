@@ -68,7 +68,7 @@ pub fn build_engine(
     #[cfg(feature = "wikipedia")]
     {
         use mangater_sdk::traits::{Config, Domain};
-        use site_wikipedia::WikipediaInstance;
+        use mangater_sites_wikipedia::WikipediaInstance;
 
         let mut wikipedia = WikipediaInstance::new();
         // Plugins requiring a custom config section must implement `Config`.
@@ -85,7 +85,7 @@ pub fn build_engine(
     #[cfg(feature = "mangadex")]
     {
         use mangater_sdk::traits::Domain;
-        use site_mangadex::MangadexInstance;
+        use mangater_sites_mangadex::MangadexInstance;
 
         let mangadex = MangadexInstance::new();
         engine
@@ -97,7 +97,7 @@ pub fn build_engine(
     #[cfg(feature = "nasa")]
     {
         use mangater_sdk::traits::Domain;
-        use site_nasa_search::NasaSearchInstance;
+        use mangater_sites_nasa_search::NasaSearchInstance;
 
         let nasa_search = NasaSearchInstance::new();
         engine.registry().add_to_registry(

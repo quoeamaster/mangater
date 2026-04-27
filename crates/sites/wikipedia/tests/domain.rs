@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 
 use mangater_sdk::traits::Domain;
-use site_wikipedia::WikipediaInstance;
+use mangater_sites_wikipedia::WikipediaInstance;
 
 #[test]
 fn test_wikipedia_domain_key() {

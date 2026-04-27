@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 
 use mangater_sdk::traits::UrlFilter;
-use site_wikipedia::WikipediaInstance;
+use mangater_sites_wikipedia::WikipediaInstance;
 
 use tracing_subscriber::EnvFilter;
 
