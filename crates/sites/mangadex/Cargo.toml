@@ -3,7 +3,15 @@ name = "mangater-sites-mangadex"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "mangadex implementation for Mangater"
+description = "Mangadex plugin implementation for Mangater"
+
+repository = "https://github.com/quoeamaster/mangater/tree/main/crates/sites/mangadex"
+homepage = "https://github.com/quoeamaster/mangater/tree/main/crates/sites/mangadex"
+documentation = "https://crates.io/crates/mangater-core/mangater-sites-mangadex"
+readme = "README.md"
+
+keywords = ["manga", "mangadex", "plugin", "scraper"]
+categories = ["api-bindings", "network-programming"]
 
 [dependencies]
 mangater-sdk = { path = "../../mangater-sdk" }
